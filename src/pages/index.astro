@@ -1,0 +1,21 @@
+---
+import Layout from '../layouts/Layout.astro';
+import FeaturedPatterns from '../components/FeaturedPatterns.astro';
+import Newsletter from '../components/Newsletter.astro';
+import Hero from '../components/Hero.astro';
+---
+
+<Layout 
+  title="Knitting Patterns Store | Beautiful & Modern Knitting Patterns"
+  description="Discover our collection of modern knitting patterns. From sweaters to accessories, find your next knitting project with our detailed patterns and video tutorials."
+>
+  <Hero />
+  <FeaturedPatterns />
+  <section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+      <h2 class="text-4xl mb-8 text-center">Latest from the Blog</h2>
+      <!-- Blog posts grid will go here -->
+    </div>
+  </section>
+  <Newsletter />
+</Layout>

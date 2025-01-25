@@ -1,0 +1,114 @@
+// services/patternsService.js
+import { Octokit } from '@octokit/rest';
+
+// Initialize GitHub client
+const octokit = new Octokit({
+  auth: process.env.NEXT_PUBLIC_GITHUB_TOKEN
+});
+
+const owner = process.env.NEXT_PUBLIC_GITHUB_OWNER;
+const repo = process.env.NEXT_PUBLIC_GITHUB_REPO;
+const path = 'data/patterns.json';
+
+// Function to fetch patterns with filtering
+export async function fetchPatterns(filters = {}) {
+  try {
+    // Get patterns data from GitHub
+    const { data } = await octokit.repos.getContent({
+      owner,
+      repo,
+      path,
+    });
+
+    // Decode content from base64
+    const content = JSON.parse(Buffer.from(data.content, 'base64').toString());
+    let patterns = content.patterns;
+
+    // Apply filters if they exist
+    if (filters) {
+      patterns = patterns.filter(pattern => {
+        let matches = true;
+        
+        // Filter by category
+        if (filters.category && pattern.category !== filters.category) {
+          matches = false;
+        }
+        
+        // Filter by skill level
+        if (filters.skillLevel && pattern.skillLevel !== filters.skillLevel) {
+          matches = false;
+        }
+        
+        // Filter by yarn weight
+        if (filters.yarnWeight && pattern.yarnWeight !== filters.yarnWeight) {
+          matches = false;
+        }
+        
+        // Filter by price range
+        if (filters.maxPrice && pattern.price > filters.maxPrice) {
+          matches = false;
+        }
+        
+        // Search by title or description
+        if (filters.search) {
+          const searchTerm = filters.search.toLowerCase();
+          const matchesSearch = 
+            pattern.title.toLowerCase().includes(searchTerm) ||
+            pattern.description.toLowerCase().includes(searchTerm);
+          if (!matchesSearch) matches = false;
+        }
+        
+        return matches;
+      });
+    }
+
+    return patterns;
+  } catch (error) {
+    console.error('Error fetching patterns:', error);
+    throw error;
+  }
+}
+
+// Function to add or update a pattern
+export async function savePattern(pattern) {
+  try {
+    // Get current file content
+    const { data: currentFile } = await octokit.repos.getContent({
+      owner,
+      repo,
+      path,
+    });
+
+    // Decode and parse current patterns
+    const content = JSON.parse(Buffer.from(currentFile.content, 'base64').toString());
+    let patterns = content.patterns;
+
+    // Update existing or add new pattern
+    const existingIndex = patterns.findIndex(p => p.id === pattern.id);
+    if (existingIndex >= 0) {
+      patterns[existingIndex] = { ...patterns[existingIndex], ...pattern };
+    } else {
+      // Generate new ID if not provided
+      const newPattern = {
+        ...pattern,
+        id: pattern.id || Date.now(),
+      };
+      patterns.push(newPattern);
+    }
+
+    // Update file in GitHub
+    await octokit.repos.createOrUpdateFileContents({
+      owner,
+      repo,
+      path,
+      message: `Update pattern: ${pattern.title}`,
+      content: Buffer.from(JSON.stringify({ patterns }, null, 2)).toString('base64'),
+      sha: currentFile.sha,
+    });
+
+    return pattern;
+  } catch (error) {
+    console.error('Error saving pattern:', error);
+    throw error;
+  }
+}

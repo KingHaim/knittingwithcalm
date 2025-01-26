@@ -6,11 +6,20 @@ import PatternDetails from './PatternDetails';
 import PatternTags from './PatternTags';
 
 export default function PatternCard({ pattern }) {
-  const addToCart = useCart(state => state.addItem);
+  const { items, addItem, removeItem } = useCart();
+  const isInCart = items.some(item => item.id === pattern.id);
 
   if (!pattern) return null;
 
   const { title, price, category, yarnWeight, image } = pattern;
+
+  const handleCartAction = () => {
+    if (isInCart) {
+      removeItem(pattern.id);
+    } else {
+      addItem(pattern);
+    }
+  };
 
   return (
     <article className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
@@ -20,10 +29,11 @@ export default function PatternCard({ pattern }) {
         <PatternTags category={category} yarnWeight={yarnWeight} />
         <div className="mt-4">
           <Button
-            onClick={() => addToCart(pattern)}
+            onClick={handleCartAction}
+            variant={isInCart ? "secondary" : "primary"}
             className="w-full"
           >
-            Add to Cart
+            {isInCart ? 'Remove from Cart' : 'Add to Cart'}
           </Button>
         </div>
       </div>

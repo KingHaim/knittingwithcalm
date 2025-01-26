@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Layout from './components/layout/Layout';
 import Home from './pages/Home';
 import Shop from './pages/Shop';
+import Cart from './pages/Cart';
 import Bundles from './pages/Bundles';
 import Tutorials from './pages/Tutorials';
 import Blog from './pages/Blog';
@@ -25,6 +26,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/shop" element={<Shop />} />
+            <Route path="/cart" element={<Cart />} />
             <Route path="/bundles" element={<Bundles />} />
             <Route path="/tutorials" element={<Tutorials />} />
             <Route path="/blog" element={<Blog />} />

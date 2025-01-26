@@ -54,7 +54,7 @@ const mockPatterns = [
     category: "Sweater",
     subcategory: "Cardigan",
     yarnWeight: "DK",
-    skillLevel: "Intermediate"
+    skillLevel: "Advanced"
   },
   {
     id: 6,

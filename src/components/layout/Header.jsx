@@ -8,7 +8,13 @@ export default function Header() {
     <header className="bg-white shadow-sm">
       <div className="container mx-auto px-4 py-4">
         <nav className="flex items-center justify-between">
-          <Link to="/" className="text-2xl font-bold">KnitPatterns</Link>
+        <Link to="/" className="text-2xl font-bold">
+            <img 
+              src="/images/logo.png" 
+              alt="Knitting With Calm Logo" 
+              className="h-8"
+            />
+          </Link>
           
           <div className="hidden md:flex space-x-6">
             <Link to="/shop" className="text-gray-700 hover:text-gray-900">Shop</Link>

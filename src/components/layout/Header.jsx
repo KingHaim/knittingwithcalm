@@ -18,7 +18,6 @@ export default function Header() {
           </Link>
           
           <div className="hidden md:flex space-x-6">
-            <Link to="/shop" className="text-gray-700 hover:text-gray-900">Shop</Link>
             <Link to="/bundles" className="text-gray-700 hover:text-gray-900">Bundles</Link>
             <Link to="/tutorials" className="text-gray-700 hover:text-gray-900">Tutorials</Link>
             <Link to="/blog" className="text-gray-700 hover:text-gray-900">Blog</Link>

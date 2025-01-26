@@ -10,7 +10,7 @@ export default function Header() {
         <nav className="flex items-center justify-between">
         <Link to="/" className="text-2xl font-bold">
             <img 
-              src="/images/logo.png" 
+              src={logoImage}
               alt="Knitting With Calm Logo" 
               className="h-8"
             />

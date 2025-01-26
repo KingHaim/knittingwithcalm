@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useCart } from '../../stores/cartStore';
+import logoImage from '../../assets/logo.png';
 
 export default function Header() {
   const cartCount = useCart(state => state.items.length);

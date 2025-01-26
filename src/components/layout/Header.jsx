@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useCart } from '../../stores/cartStore';
-import logoImage from '../../assets/images/logo.png';
+import logoImage from '../assets/logo.png'
 
 export default function Header() {
   const cartCount = useCart(state => state.items.length);
@@ -9,13 +9,18 @@ export default function Header() {
     <header className="bg-white shadow-sm">
       <div className="container mx-auto px-4 py-4">
         <nav className="flex items-center justify-between">
-        <Link to="/" className="text-2xl font-bold">
-            <img 
-              src={logoImage}
-              alt="Knitting With Calm Logo" 
-              className="h-8"
-            />
-          </Link>
+        <Link to="/" className="text-2xl font-primary">
+          <img 
+            src={logoImage}
+            alt="Beautiful Knitting Patterns"
+            className="h-10"
+            onError={(e) => {
+              console.error('Image failed to load:', e);
+              // Optionally show a fallback
+              e.target.style.display = 'none';
+            }}
+          />
+        </Link>
           
           <div className="hidden md:flex space-x-6">
             <Link to="/bundles" className="text-gray-700 hover:text-gray-900">Bundles</Link>

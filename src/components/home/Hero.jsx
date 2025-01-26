@@ -1,15 +1,24 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import closeupImage from "../../assets/closeup.jpg";
 
 export default function Hero() {
   return (
-    <section className="bg-gradient-to-r from-indigo-50 to-purple-50 py-20">
-      <div className="container mx-auto px-4">
+    <section 
+      className="relative py-20 bg-cover bg-center" 
+      style={{ 
+        backgroundImage: `url(${closeupImage})`,
+      }}
+    >
+      {/* Add an overlay to ensure text readability */}
+      <div className="absolute inset-0 bg-black/30" /> {/* This creates a semi-transparent dark overlay */}
+      
+      <div className="container mx-auto px-4 relative"> {/* relative ensures this stays above the overlay */}
         <div className="max-w-3xl mx-auto text-center">
-          <h1 className="text-5xl md:text-6xl font-primary mb-6">
+          <h1 className="text-5xl md:text-6xl font-primary mb-6 text-white"> {/* Changed to white text */}
             Beautiful Knitting Patterns for Every Skill Level
           </h1>
-          <p className="text-xl text-gray-600 mb-8">
+          <p className="text-xl text-gray-100 mb-8"> {/* Lightened text color */}
             Discover modern designs and start your next knitting project today
           </p>
           <div className="flex gap-4 justify-center">

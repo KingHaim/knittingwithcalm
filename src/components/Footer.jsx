@@ -6,7 +6,11 @@ export default function Footer() {
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <h3 className="font-primary text-xl mb-4">KnitPatterns</h3>
+            <img 
+              src="/images/logo.png"
+              alt="Knitting With Calm"
+              className="h-16" // Using Tailwind to control the height
+            />
             <p className="text-gray-600">Beautiful & Modern Knitting Patterns</p>
           </div>
           <div>

@@ -85,7 +85,7 @@ export default function Cart() {
                         value: total.toFixed(2),
                         currency_code: "USD"
                       },
-                      description: `KnitPatterns - ${items.length} pattern${items.length > 1 ? 's' : ''}`
+                      description: `Knitting With Calm - ${items.length} pattern${items.length > 1 ? 's' : ''}`
                     }
                   ]
                 });

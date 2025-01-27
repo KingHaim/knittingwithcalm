@@ -53,10 +53,8 @@ export default function Shop() {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-4xl font-primary mb-8">Shop Patterns</h1>
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        <PatternFilters
-          filters={filters}
-          setFilters={setFilters}
-        />
+        <div>Filters temporarily removed</div>
+        
         <div className="lg:col-span-3">
           <div className="mb-4 text-sm text-gray-600">
             {filteredPatterns.length} {filteredPatterns.length === 1 ? 'pattern' : 'patterns'} found

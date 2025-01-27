@@ -11,8 +11,12 @@ export default function Header() {
     <header className="bg-white shadow-sm">
       <div className="container mx-auto px-4 py-4">
         <nav className="flex items-center justify-between">
-          <Link to="/" className="text-2xl font-primary">
-            Knitting Patterns
+          <Link to="/" className="font-primary">
+            <img 
+              src="/images/logo.png" 
+              alt="Knitting Patterns Logo" 
+              className="h-12 w-auto"
+            />
           </Link>
           
           <div className="hidden md:flex space-x-6">

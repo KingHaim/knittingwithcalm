@@ -7,7 +7,11 @@ export default function Footer() {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <h3 className="font-primary text-lg mb-4">About Us</h3>
+          <img 
+                src="/images/logo.png" 
+                alt="Knitting Patterns Logo" 
+                className="h-16 w-auto"
+              />
             <p className="text-gray-600">
               Modern knitting patterns for contemporary crafters.
             </p>

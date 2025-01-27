@@ -1,18 +1,16 @@
 import { env } from './environment';
 
 export const paypalConfig = {
-  "client-id": env.paypal.clientId,
-  currency: env.paypal.currency,
-  intent: env.paypal.intent,
+  "client-id": "AYsOmsJ-BaZgz45H8oiqHZ2Xgtz0uPaCf-OTo9qK1Xdo2Wl3L3RnjL1-dpZlNtg-aDZslsbZS-RXo6TA",
+  currency: "EUR",
+  intent: "capture",
   // Enable sandbox mode for development
-  ...(env.isDevelopment && {
-    "enable-funding": "card",
-    "components": "buttons",
-    "debug": true
-  })
+  "enable-funding": "card",
+  "components": "buttons",
+  "debug": true
 };
 
-export const PAYPAL_CLIENT_ID = 'your_client_id_here';
+export const PAYPAL_CLIENT_ID = 'AYsOmsJ-BaZgz45H8oiqHZ2Xgtz0uPaCf-OTo9qK1Xdo2Wl3L3RnjL1-dpZlNtg-aDZslsbZS-RXo6TA';
 
 export const PAYPAL_OPTIONS = {
   currency: 'EUR',

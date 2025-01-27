@@ -7,12 +7,10 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        primary: ['Playfair Display', 'serif'],
-        body: ['Inter', 'sans-serif'],
+        'body': ['system-ui', '-apple-system', 'sans-serif'],
+        'primary': ['system-ui', '-apple-system', 'sans-serif'],
       },
     },
   },
-  plugins: [
-    require('@tailwindcss/forms'),
-  ],
+  plugins: [],
 }

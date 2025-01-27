@@ -1,19 +1,15 @@
 import React from 'react';
 
-export function PatternFilters({ filters = null, setFilters = () => {} }) {
-  // Ensure we have default values
-  const defaultFilters = {
-    category: [],
-    difficulty: [],
-    price: { min: 0, max: 100 }
-  };
+export function PatternFilters(props) {
+  // Ensure props exist
+  if (!props) return null;
 
-  // Ensure we're working with valid data
-  const safeFilters = filters || defaultFilters;
-  
-  // Ensure arrays exist
-  const categories = Array.isArray(safeFilters.category) ? safeFilters.category : [];
-  const difficulties = Array.isArray(safeFilters.difficulty) ? safeFilters.difficulty : [];
+  // Destructure with defaults
+  const { filters = {}, setFilters = () => {} } = props;
+
+  // Define static filter options
+  const CATEGORIES = ['Sweaters', 'Hats', 'Scarves', 'Socks'];
+  const DIFFICULTIES = ['Beginner', 'Intermediate', 'Advanced'];
 
   const handleFilterChange = (type, value) => {
     setFilters(prev => ({
@@ -26,34 +22,67 @@ export function PatternFilters({ filters = null, setFilters = () => {} }) {
     <div className="space-y-4">
       <div>
         <h3 className="font-medium mb-2">Categories</h3>
-        <div>
-          {categories.length > 0 ? (
-            categories.map((category, index) => (
-              <div key={index}>{category}</div>
-            ))
-          ) : (
-            <p>No categories available</p>
-          )}
+        <div className="space-y-2">
+          {CATEGORIES.map((category) => (
+            <label key={category} className="flex items-center">
+              <input
+                type="checkbox"
+                checked={filters.category?.includes(category)}
+                onChange={(e) => {
+                  const newCategories = e.target.checked
+                    ? [...(filters.category || []), category]
+                    : (filters.category || []).filter(c => c !== category);
+                  handleFilterChange('category', newCategories);
+                }}
+                className="mr-2"
+              />
+              {category}
+            </label>
+          ))}
         </div>
       </div>
       
       <div>
         <h3 className="font-medium mb-2">Difficulty</h3>
-        <div>
-          {difficulties.length > 0 ? (
-            difficulties.map((difficulty, index) => (
-              <div key={index}>{difficulty}</div>
-            ))
-          ) : (
-            <p>No difficulty levels available</p>
-          )}
+        <div className="space-y-2">
+          {DIFFICULTIES.map((level) => (
+            <label key={level} className="flex items-center">
+              <input
+                type="checkbox"
+                checked={filters.difficulty?.includes(level)}
+                onChange={(e) => {
+                  const newDifficulties = e.target.checked
+                    ? [...(filters.difficulty || []), level]
+                    : (filters.difficulty || []).filter(d => d !== level);
+                  handleFilterChange('difficulty', newDifficulties);
+                }}
+                className="mr-2"
+              />
+              {level}
+            </label>
+          ))}
         </div>
       </div>
       
       <div>
         <h3 className="font-medium mb-2">Price Range</h3>
-        <div>
-          <span>€{safeFilters.price?.min || 0} - €{safeFilters.price?.max || 100}</span>
+        <div className="space-y-2">
+          <div>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={filters.price?.max || 100}
+              onChange={(e) => handleFilterChange('price', {
+                min: filters.price?.min || 0,
+                max: parseInt(e.target.value)
+              })}
+              className="w-full"
+            />
+            <div className="text-sm text-gray-600">
+              €{filters.price?.min || 0} - €{filters.price?.max || 100}
+            </div>
+          </div>
         </div>
       </div>
     </div>

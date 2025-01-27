@@ -12,17 +12,19 @@ export default function Header() {
       <div className="container mx-auto px-4 py-4">
         <nav className="flex items-center justify-between">
           <Link to="/" className="text-2xl font-primary">
-            <img 
-              src="/images/logo.png"
-              alt="Knitting With Calm"
-              className="h-16" // Using Tailwind to control the height
-            />
+            Knitting Patterns
           </Link>
           
           <div className="hidden md:flex space-x-6">
-            <Link to="/bundles" className="text-gray-700 hover:text-gray-900">Bundles</Link>
-            <Link to="/tutorials" className="text-gray-700 hover:text-gray-900">Tutorials</Link>
-            <Link to="/blog" className="text-gray-700 hover:text-gray-900">Blog</Link>
+            <Link to="/shop" className="text-gray-700 hover:text-gray-900">
+              Shop
+            </Link>
+            <Link to="/blog" className="text-gray-700 hover:text-gray-900">
+              Blog
+            </Link>
+            <Link to="/about" className="text-gray-700 hover:text-gray-900">
+              About
+            </Link>
           </div>
 
           <div className="flex items-center space-x-4">

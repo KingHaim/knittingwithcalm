@@ -11,3 +11,10 @@ export const paypalConfig = {
     "debug": true
   })
 };
+
+export const PAYPAL_CLIENT_ID = 'your_client_id_here';
+
+export const PAYPAL_OPTIONS = {
+  currency: 'EUR',
+  intent: 'capture'
+};

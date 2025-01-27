@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 export default function Footer() {
   return (
@@ -24,8 +25,8 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold mb-4">Help</h4>
             <ul className="space-y-2">
-              <li><a href="/faq" className="text-gray-600 hover:text-gray-900">FAQ</a></li>
-              <li><a href="/contact" className="text-gray-600 hover:text-gray-900">Contact</a></li>
+              <li><Link to="/faq" className="text-gray-600 hover:text-gray-900">FAQ</Link></li>
+              <li><Link to="/contact" className="text-gray-600 hover:text-gray-900">Contact</Link></li>
             </ul>
           </div>
           <div>

@@ -1,19 +1,30 @@
-import React from 'react';
-import PatternFilters from '../components/shop/PatternFilters';
+import React, { useState } from 'react';
+import { PatternFilters } from '../components/PatternFilters';
 import PatternGrid from '../components/shop/PatternGrid';
 import { usePatterns } from '../hooks/usePatterns';
 import { usePatternFilters } from '../hooks/usePatternFilters';
 import { filterPatterns } from '../utils/filterPatterns';
 
 export default function Shop() {
-  const { filters, updateFilter, clearFilters } = usePatternFilters();
+  const [filters, setFilters] = useState({
+    category: [],
+    difficulty: [],
+    price: { min: 0, max: 100 },
+  });
   const { data: patterns, isLoading } = usePatterns();
 
   const handleFilterChange = (category, value) => {
     if (category === 'clear') {
-      clearFilters();
+      setFilters({
+        category: [],
+        difficulty: [],
+        price: { min: 0, max: 100 },
+      });
     } else {
-      updateFilter(category, value);
+      setFilters(prev => ({
+        ...prev,
+        [category]: value
+      }));
     }
   };
 
@@ -44,7 +55,7 @@ export default function Shop() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         <PatternFilters
           filters={filters}
-          onFilterChange={handleFilterChange}
+          setFilters={setFilters}
         />
         <div className="lg:col-span-3">
           <div className="mb-4 text-sm text-gray-600">

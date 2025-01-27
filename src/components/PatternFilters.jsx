@@ -1,49 +1,60 @@
-import React, { useState } from 'react';
-import { PatternFilters } from '../components/PatternFilters';  // Check this path
+import React from 'react';
 
-export function PatternFilters({ filters, setFilters }) {
-  // Make sure filters is initialized with default values
+export function PatternFilters({ filters = null, setFilters = () => {} }) {
+  // Ensure we have default values
   const defaultFilters = {
     category: [],
     difficulty: [],
-    price: { min: 0, max: 100 },
-    // add other filter properties as needed
+    price: { min: 0, max: 100 }
   };
 
-  // Use the default filters if filters prop is undefined
-  const currentFilters = filters || defaultFilters;
+  // Ensure we're working with valid data
+  const safeFilters = filters || defaultFilters;
+  
+  // Ensure arrays exist
+  const categories = Array.isArray(safeFilters.category) ? safeFilters.category : [];
+  const difficulties = Array.isArray(safeFilters.difficulty) ? safeFilters.difficulty : [];
 
   const handleFilterChange = (type, value) => {
-    if (!setFilters) return; // Guard clause if setFilters is undefined
-    
     setFilters(prev => ({
       ...prev,
       [type]: value
     }));
   };
 
-  const [filtersState, setFiltersState] = useState({
-    category: [],    // Must be an array
-    difficulty: [],  // Must be an array
-    price: { min: 0, max: 100 }
-  });
-
   return (
     <div className="space-y-4">
-      {/* Filter UI components */}
       <div>
         <h3 className="font-medium mb-2">Categories</h3>
-        {/* Add your category filters here */}
+        <div>
+          {categories.length > 0 ? (
+            categories.map((category, index) => (
+              <div key={index}>{category}</div>
+            ))
+          ) : (
+            <p>No categories available</p>
+          )}
+        </div>
       </div>
       
       <div>
         <h3 className="font-medium mb-2">Difficulty</h3>
-        {/* Add your difficulty filters here */}
+        <div>
+          {difficulties.length > 0 ? (
+            difficulties.map((difficulty, index) => (
+              <div key={index}>{difficulty}</div>
+            ))
+          ) : (
+            <p>No difficulty levels available</p>
+          )}
+        </div>
       </div>
       
       <div>
         <h3 className="font-medium mb-2">Price Range</h3>
-        {/* Add your price range filters here */}
+        <div>
+          <span>€{safeFilters.price?.min || 0} - €{safeFilters.price?.max || 100}</span>
+        </div>
       </div>
     </div>
   );

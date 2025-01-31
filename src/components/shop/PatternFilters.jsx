@@ -3,6 +3,8 @@ import FilterSection from './FilterSection';
 import { FILTER_OPTIONS } from '../../constants/filterOptions';
 
 export default function PatternFilters({ filters, onFilterChange }) {
+  console.log('Patterns before passing to filter:', filters);
+
   return (
     <aside className="bg-white p-6 rounded-lg shadow-sm">
       {Object.entries(FILTER_OPTIONS).map(([category, options]) => (

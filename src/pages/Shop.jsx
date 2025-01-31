@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { PatternFilters } from '../components/PatternFilters';
+import PatternFilters from '../components/PatternFilters';
 import PatternGrid from '../components/shop/PatternGrid';
 import { usePatterns } from '../hooks/usePatterns';
 import { filterPatterns } from '../utils/filterPatterns';
@@ -29,6 +29,9 @@ export default function Shop() {
 
   const filteredPatterns = patterns ? filterPatterns(patterns, filters) : [];
 
+  // Add console.log to debug
+  console.log('Shop patterns:', patterns);
+
   if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -53,12 +56,12 @@ export default function Shop() {
       <h1 className="text-4xl font-primary mb-8">Shop Patterns</h1>
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         <div>
-          {patterns && patterns.length > 0 && (
+          {patterns && patterns.length > 0 ? (
             <PatternFilters 
               patterns={patterns} 
               onFilterChange={handleFilterChange} 
             />
-          )}
+          ) : null}
         </div>
         
         <div className="lg:col-span-3">

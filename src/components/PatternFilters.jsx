@@ -1,23 +1,18 @@
 import React from 'react';
 
 export default function PatternFilters({ patterns, onFilterChange }) {
-  // If patterns is not an array or is empty, return null
-  if (!Array.isArray(patterns) || patterns.length === 0) {
+  // Add console.log to debug
+  console.log('PatternFilters received:', { patterns });
+
+  // If patterns is falsy or empty, return early
+  if (!patterns?.length) {
+    console.log('No patterns available');
     return null;
   }
 
-  // Get unique categories and skill levels with explicit null checks
-  const categories = [];
-  const skillLevels = [];
-
-  patterns.forEach(pattern => {
-    if (pattern && pattern.category && !categories.includes(pattern.category)) {
-      categories.push(pattern.category);
-    }
-    if (pattern && pattern.skillLevel && !skillLevels.includes(pattern.skillLevel)) {
-      skillLevels.push(pattern.skillLevel);
-    }
-  });
+  // Get unique categories and skill levels
+  const categories = [...new Set(patterns.map(p => p?.category).filter(Boolean))];
+  const skillLevels = [...new Set(patterns.map(p => p?.skillLevel).filter(Boolean))];
 
   return (
     <div className="space-y-4">
@@ -52,5 +47,4 @@ export default function PatternFilters({ patterns, onFilterChange }) {
       )}
     </div>
   );
-} 
-} 
+}

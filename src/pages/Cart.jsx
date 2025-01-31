@@ -2,28 +2,40 @@ import React from 'react';
 import { useCart } from '../stores/cartStore';
 import { PayPalButtons } from '@paypal/react-paypal-js';
 import Button from '../components/ui/Button';
+import { useNavigate } from 'react-router-dom';
+import emailjs from '@emailjs/browser';
 
 export default function Cart() {
   const { items, removeItem, clearCart } = useCart();
+  const navigate = useNavigate();
   
-  const total = items.reduce((sum, item) => sum + item.price, 0);
+  const total = items.reduce((sum, item) => sum + Number(item.price), 0);
 
   const createOrder = (data, actions) => {
+    const orderItems = items.map(item => ({
+      name: item.title,
+      unit_amount: {
+        currency_code: 'USD',
+        value: Number(item.price).toFixed(2)
+      },
+      quantity: '1'
+    }));
+
+    const itemTotal = total.toFixed(2);
+
     return actions.order.create({
       purchase_units: [{
         amount: {
-          value: total.toFixed(2),
-          currency_code: 'USD'
+          currency_code: 'USD',
+          value: itemTotal,
+          breakdown: {
+            item_total: {
+              currency_code: 'USD',
+              value: itemTotal
+            }
+          }
         },
-        description: `Purchase from Knitting With Calm - ${items.length} item(s)`,
-        items: items.map(item => ({
-          name: item.title,
-          unit_amount: {
-            currency_code: 'USD',
-            value: item.price.toFixed(2)
-          },
-          quantity: '1'
-        }))
+        items: orderItems
       }]
     });
   };
@@ -31,22 +43,34 @@ export default function Cart() {
   const onApprove = async (data, actions) => {
     try {
       const order = await actions.order.capture();
-      
-      // Handle successful payment
-      console.log('Payment successful:', order);
-      
-      // You should:
-      // 1. Send order details to your backend
-      // 2. Generate download links or access to purchased patterns
-      // 3. Clear the cart
+      const buyerEmail = order.payer.email_address;
+
+      // Send email with download links
+      await emailjs.send(
+        'service_8k4945f',
+        'template_fdwy6o6',
+        {
+          to_email: buyerEmail,
+          // If multiple items, join their names with commas
+          pattern_names: items.map(item => item.title).join(', '),
+          // Generate download links for each pattern
+          download_links: items.map(item => item.downloadUrl).join('\n'),
+          order_id: order.id
+        },
+        '1przYY0tg7DiXXvf7'
+      );
+
       clearCart();
-      
-      // Navigate to success page
-      // navigate('/success');
-      
+      navigate('/thank-you', { 
+        state: { 
+          buyerEmail,
+          patterns: items
+        }
+      });
+
     } catch (error) {
-      console.error('Payment failed:', error);
-      // Handle payment failure
+      console.error('Payment/Email Error:', error);
+      // Handle error appropriately
     }
   };
 
@@ -71,7 +95,7 @@ export default function Cart() {
           <div key={item.id} className="flex justify-between items-center p-4 bg-white rounded-lg shadow">
             <div>
               <h3 className="font-medium">{item.title}</h3>
-              <p className="text-gray-600">${item.price}</p>
+              <p className="text-gray-600">${Number(item.price).toFixed(2)}</p>
             </div>
             <button
               onClick={() => removeItem(item.id)}
@@ -93,6 +117,9 @@ export default function Cart() {
           createOrder={createOrder}
           onApprove={onApprove}
           style={{ layout: 'vertical' }}
+          onError={(err) => {
+            console.error('PayPal Error:', err);
+          }}
         />
       </div>
     </div>

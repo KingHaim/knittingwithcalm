@@ -7,40 +7,69 @@ export function PayPalButton() {
   const navigate = useNavigate();
   
   const createOrder = (data, actions) => {
-    const total = items.reduce((sum, item) => sum + item.price, 0);
-    
+    // Format each item price and calculate total
+    const formattedItems = items.map(item => ({
+      name: item.title || "Digital Pattern",
+      unit_amount: {
+        currency_code: "USD",
+        value: Number(item.price).toFixed(2)
+      },
+      quantity: "1",
+      category: "DIGITAL_GOODS"
+    }));
+
+    // Calculate total from formatted prices
+    const itemTotal = formattedItems.reduce((sum, item) => {
+      return sum + (Number(item.unit_amount.value) * Number(item.quantity));
+    }, 0).toFixed(2);
+
+    console.log('Debug - Items:', formattedItems);
+    console.log('Debug - Total:', itemTotal);
+
     return actions.order.create({
-      purchase_units: [
-        {
-          amount: {
-            value: total.toString(),
-            currency_code: "EUR"
-          },
-          description: "Knitting Patterns Purchase"
+      intent: "CAPTURE",
+      purchase_units: [{
+        items: formattedItems,
+        amount: {
+          currency_code: "USD",
+          value: itemTotal,
+          breakdown: {
+            item_total: {
+              currency_code: "USD",
+              value: itemTotal
+            }
+          }
         }
-      ]
+      }]
     });
   };
 
-  const onApprove = (data, actions) => {
-    return actions.order.capture().then((details) => {
-      console.log('Payment completed:', details);
-      clearCart();
-      navigate('/success'); // Redirect to success page
-    });
-  };
-
-  const onError = (err) => {
-    console.error('PayPal error:', err);
-    alert('There was an error processing your payment. Please try again.');
-  };
+  // Don't render if cart is empty
+  if (!items.length) {
+    return null;
+  }
 
   return (
-    <PayPalButtons
-      createOrder={createOrder}
-      onApprove={onApprove}
-      onError={onError}
-      style={{ layout: "horizontal" }}
-    />
+    <div className="paypal-button-container">
+      <PayPalButtons
+        createOrder={createOrder}
+        onApprove={async (data, actions) => {
+          const order = await actions.order.capture();
+          console.log('Payment successful:', order);
+          clearCart();
+          navigate('/thank-you');
+        }}
+        onError={(err) => {
+          console.error('PayPal Error:', {
+            message: err.message,
+            details: err.details
+          });
+        }}
+        style={{
+          layout: 'vertical',
+          shape: 'rect'
+        }}
+      />
+    </div>
   );
 } 

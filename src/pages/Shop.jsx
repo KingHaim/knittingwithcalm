@@ -5,14 +5,13 @@ import { usePatterns } from '../hooks/usePatterns';
 import { filterPatterns } from '../utils/filterPatterns';
 
 export default function Shop() {
+  const { data: patterns, isLoading } = usePatterns();
   const [filters, setFilters] = useState({
     category: [],
     skillLevel: [],
     price: { min: 0, max: 100 },
   });
   
-  const { data: patterns, isLoading } = usePatterns();
-
   const handleFilterChange = (category, value) => {
     if (category === 'clear') {
       setFilters({
@@ -54,17 +53,19 @@ export default function Shop() {
       <h1 className="text-4xl font-primary mb-8">Shop Patterns</h1>
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         <div>
-          <PatternFilters 
-            patterns={patterns} 
-            onFilterChange={handleFilterChange} 
-          />
+          {patterns && !isLoading && (
+            <PatternFilters 
+              patterns={patterns} 
+              onFilterChange={handleFilterChange} 
+            />
+          )}
         </div>
         
         <div className="lg:col-span-3">
           <div className="mb-4 text-sm text-gray-600">
-            {filteredPatterns.length} {filteredPatterns.length === 1 ? 'pattern' : 'patterns'} found
+            {filteredPatterns?.length || 0} {(filteredPatterns?.length || 0) === 1 ? 'pattern' : 'patterns'} found
           </div>
-          <PatternGrid patterns={filteredPatterns} />
+          {patterns && <PatternGrid patterns={filteredPatterns} />}
         </div>
       </div>
     </div>

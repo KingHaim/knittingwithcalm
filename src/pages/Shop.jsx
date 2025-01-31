@@ -2,22 +2,22 @@ import React, { useState } from 'react';
 import { PatternFilters } from '../components/PatternFilters';
 import PatternGrid from '../components/shop/PatternGrid';
 import { usePatterns } from '../hooks/usePatterns';
-import { usePatternFilters } from '../hooks/usePatternFilters';
 import { filterPatterns } from '../utils/filterPatterns';
 
 export default function Shop() {
   const [filters, setFilters] = useState({
     category: [],
-    difficulty: [],
+    skillLevel: [],
     price: { min: 0, max: 100 },
   });
+  
   const { data: patterns, isLoading } = usePatterns();
 
   const handleFilterChange = (category, value) => {
     if (category === 'clear') {
       setFilters({
         category: [],
-        difficulty: [],
+        skillLevel: [],
         price: { min: 0, max: 100 },
       });
     } else {
@@ -53,7 +53,12 @@ export default function Shop() {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-4xl font-primary mb-8">Shop Patterns</h1>
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        <div>Filters temporarily removed</div>
+        <div>
+          <PatternFilters 
+            patterns={patterns} 
+            onFilterChange={handleFilterChange} 
+          />
+        </div>
         
         <div className="lg:col-span-3">
           <div className="mb-4 text-sm text-gray-600">

@@ -27,7 +27,7 @@ export default function Shop() {
     }
   };
 
-  const filteredPatterns = filterPatterns(patterns, filters);
+  const filteredPatterns = patterns ? filterPatterns(patterns, filters) : [];
 
   if (isLoading) {
     return (
@@ -53,7 +53,7 @@ export default function Shop() {
       <h1 className="text-4xl font-primary mb-8">Shop Patterns</h1>
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         <div>
-          {patterns && !isLoading && (
+          {patterns && patterns.length > 0 && (
             <PatternFilters 
               patterns={patterns} 
               onFilterChange={handleFilterChange} 
@@ -63,9 +63,9 @@ export default function Shop() {
         
         <div className="lg:col-span-3">
           <div className="mb-4 text-sm text-gray-600">
-            {filteredPatterns?.length || 0} {(filteredPatterns?.length || 0) === 1 ? 'pattern' : 'patterns'} found
+            {filteredPatterns.length} {filteredPatterns.length === 1 ? 'pattern' : 'patterns'} found
           </div>
-          {patterns && <PatternGrid patterns={filteredPatterns} />}
+          <PatternGrid patterns={filteredPatterns} />
         </div>
       </div>
     </div>

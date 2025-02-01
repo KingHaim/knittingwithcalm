@@ -5,19 +5,22 @@ import { usePatterns } from '../hooks/usePatterns';
 import { filterPatterns } from '../utils/filterPatterns';
 
 export default function Shop() {
-  const { data: patterns, isLoading, error } = usePatterns();
   const [filters, setFilters] = useState({
-    category: [],
     skillLevel: [],
-    price: { min: 0, max: 100 },
+    age: [],
+    yarnWeight: [],
+    gender: [],
+    price: { min: 0, max: 100 }
   });
   
   const handleFilterChange = (category, value) => {
     if (category === 'clear') {
       setFilters({
-        category: [],
         skillLevel: [],
-        price: { min: 0, max: 100 },
+        age: [],
+        yarnWeight: [],
+        gender: [],
+        price: { min: 0, max: 100 }
       });
     } else {
       setFilters(prev => ({

@@ -17,6 +17,10 @@ export default function PatternFilters({ filters = {}, onFilterChange }) {
     Array.isArray(arr) && arr.length > 0
   );
 
+  const handleFilterSelect = (category, value) => {
+    onFilterChange(category, value);
+  };
+
   return (
     <aside className="bg-white p-6 rounded-lg shadow-sm">
       {Object.entries(FILTER_OPTIONS).map(([category, options]) => {
@@ -30,7 +34,7 @@ export default function PatternFilters({ filters = {}, onFilterChange }) {
             title={category}
             options={options}
             selected={selectedFilters}
-            onSelect={onFilterChange}
+            onSelect={(value) => handleFilterSelect(category, value)}
           />
         );
       })}

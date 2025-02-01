@@ -1,12 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PatternFilters from '../components/PatternFilters';
 import PatternGrid from '../components/shop/PatternGrid';
 import { usePatterns } from '../hooks/usePatterns';
-import { FILTER_OPTIONS } from '../constants/filterOptions';
 
 export default function Shop() {
   const { data: patterns, isLoading, error } = usePatterns();
-  const [filters, setFilters] = React.useState({
+  const [filters, setFilters] = useState({
     skillLevel: [],
     age: [],
     yarnWeight: [],
@@ -56,9 +55,6 @@ export default function Shop() {
           />
         </div>
         <div className="lg:col-span-3">
-          <div className="mb-4 text-sm text-gray-600">
-            {filteredPatterns.length} {filteredPatterns.length === 1 ? 'pattern' : 'patterns'} found
-          </div>
           <PatternGrid patterns={filteredPatterns} />
         </div>
       </div>

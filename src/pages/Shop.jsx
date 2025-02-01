@@ -50,16 +50,16 @@ export default function Shop() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         <div>
           <PatternFilters 
-            patterns={filters} 
+            filters={filters}  // Changed from patterns to filters
             onFilterChange={handleFilterChange} 
           />
         </div>
         
         <div className="lg:col-span-3">
           <div className="mb-4 text-sm text-gray-600">
-            {patterns.length} {patterns.length === 1 ? 'pattern' : 'patterns'} found
+            {filteredPatterns.length} {filteredPatterns.length === 1 ? 'pattern' : 'patterns'} found
           </div>
-          <PatternGrid patterns={patterns} />
+          <PatternGrid patterns={filteredPatterns} /> {/* Changed from patterns to filteredPatterns */}
         </div>
       </div>
     </div>

@@ -1,18 +1,11 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import FilterSection from './FilterSection';
 import { FILTER_OPTIONS } from '../../constants/filterOptions';
 
 export default function PatternFilters({ filters = {}, onFilterChange }) {
-  // Validate inputs
+  // Input validation
   if (!onFilterChange || typeof onFilterChange !== 'function') {
     console.error('PatternFilters: onFilterChange prop must be a function');
-    return null;
-  }
-
-  // Safe check for FILTER_OPTIONS
-  if (!FILTER_OPTIONS || typeof FILTER_OPTIONS !== 'object') {
-    console.error('PatternFilters: FILTER_OPTIONS is not properly defined');
     return null;
   }
 
@@ -27,7 +20,6 @@ export default function PatternFilters({ filters = {}, onFilterChange }) {
   return (
     <aside className="bg-white p-6 rounded-lg shadow-sm">
       {Object.entries(FILTER_OPTIONS).map(([category, options]) => {
-        // Ensure selected is always an array
         const selectedFilters = Array.isArray(filters[category]) 
           ? filters[category] 
           : [];
@@ -55,14 +47,3 @@ export default function PatternFilters({ filters = {}, onFilterChange }) {
     </aside>
   );
 }
-
-// PropTypes for type checking
-PatternFilters.propTypes = {
-  filters: PropTypes.object,
-  onFilterChange: PropTypes.func.isRequired
-};
-
-// Default props
-PatternFilters.defaultProps = {
-  filters: {}
-};

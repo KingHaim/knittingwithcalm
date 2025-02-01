@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Layout from './layouts/Layout';
 import Home from './pages/Home';
-import Shop from './pages/shop';
+import Shop from './pages/Shop';
 import Cart from './pages/Cart';
 import Bundles from './pages/Bundles';
 import Tutorials from './pages/Tutorials';

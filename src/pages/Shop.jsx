@@ -17,7 +17,7 @@ export default function Shop() {
   });
   
   const handleFilterChange = (category, value) => {
-    console.log('Filter change:', { category, value }); // Debug log
+    console.log('Filter change:', { category, value });
     if (category === 'clear') {
       setFilters({
         skillLevel: [],
@@ -26,26 +26,19 @@ export default function Shop() {
         gender: [],
         price: { min: 0, max: 100 }
       });
-    } else {
-      setFilters(prev => ({
-        ...prev,
-        [category]: value
-      }));
+      return;
     }
+    
+    setFilters(prev => ({
+      ...prev,
+      [category]: value
+    }));
   };
 
-  // Move filteredPatterns after patterns declaration
+  // Calculate filtered patterns after patterns is defined
   const filteredPatterns = patterns ? filterPatterns(patterns, filters) : [];
 
-  // Debug log
-  console.log('Shop data:', { 
-    patterns, 
-    filters,
-    filteredPatterns,
-    isLoading, 
-    error
-  });
-
+  // Loading states
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading patterns</div>;
   if (!patterns) return <div>No patterns available</div>;

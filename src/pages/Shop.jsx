@@ -8,6 +8,8 @@ import { filterPatterns } from '../utils/filterPatterns';
 export default function Shop() {
   const { data: patterns, isLoading, error } = usePatterns();
   const { filters, updateFilter, clearFilters } = usePatternFilters();
+
+  console.log('Shop rendering with:', { patterns, filters });
   
   const handleFilterChange = (category, value) => {
     console.log('Filter change:', { category, value });
@@ -18,14 +20,23 @@ export default function Shop() {
     updateFilter(category, value);
   };
 
-  // Calculate filtered patterns after patterns is defined
-  const filteredPatterns = patterns ? filterPatterns(patterns, filters) : [];
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="animate-pulse">Loading patterns...</div>
+      </div>
+    );
+  }
 
-  // Loading states
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error loading patterns</div>;
-  if (!patterns) return <div>No patterns available</div>;
-  if (!Array.isArray(patterns)) return <div>Invalid patterns data</div>;
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-red-500">Error: {error.message}</div>
+      </div>
+    );
+  }
+
+  const filteredPatterns = patterns ? filterPatterns(patterns, filters) : [];
 
   return (
     <div className="container mx-auto px-4 py-8">

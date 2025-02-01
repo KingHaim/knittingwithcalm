@@ -1,38 +1,21 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PatternFilters from '../components/PatternFilters';
 import PatternGrid from '../components/shop/PatternGrid';
 import { usePatterns } from '../hooks/usePatterns';
+import { usePatternFilters } from '../hooks/usePatternFilters';
 import { filterPatterns } from '../utils/filterPatterns';
 
 export default function Shop() {
-  // Move usePatterns to the top
   const { data: patterns, isLoading, error } = usePatterns();
-
-  const [filters, setFilters] = useState({
-    skillLevel: [],
-    age: [],
-    yarnWeight: [],
-    gender: [],
-    price: { min: 0, max: 100 }
-  });
+  const { filters, updateFilter, clearFilters } = usePatternFilters();
   
   const handleFilterChange = (category, value) => {
     console.log('Filter change:', { category, value });
     if (category === 'clear') {
-      setFilters({
-        skillLevel: [],
-        age: [],
-        yarnWeight: [],
-        gender: [],
-        price: { min: 0, max: 100 }
-      });
+      clearFilters();
       return;
     }
-    
-    setFilters(prev => ({
-      ...prev,
-      [category]: value
-    }));
+    updateFilter(category, value);
   };
 
   // Calculate filtered patterns after patterns is defined
@@ -48,7 +31,7 @@ export default function Shop() {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-4xl font-primary mb-8">Shop Patterns</h1>
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        <div>
+        <div className="bg-gray-50 p-4 rounded-lg"> {/* Added padding and rounded corners */}
           <PatternFilters 
             filters={filters}
             onFilterChange={handleFilterChange} 

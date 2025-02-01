@@ -2,27 +2,19 @@ import React from 'react';
 import FilterSection from './FilterSection';
 import { FILTER_OPTIONS } from '../../constants/filterOptions';
 
+// In PatternFilters.jsx
 export default function PatternFilters({ filters = {}, onFilterChange }) {
+  console.log('PatternFilters rendering with filters:', filters);
+  
   // Input validation
   if (!onFilterChange || typeof onFilterChange !== 'function') {
     console.error('PatternFilters: onFilterChange prop must be a function');
     return null;
   }
 
-  const handleClearFilters = () => {
-    onFilterChange('clear');
-  };
-
-  const hasActiveFilters = Object.values(filters).some(arr => 
-    Array.isArray(arr) && arr.length > 0
-  );
-
-  const handleFilterSelect = (category, value) => {
-    onFilterChange(category, value);
-  };
-
   return (
     <aside className="bg-white p-6 rounded-lg shadow-sm">
+      <h2 className="text-xl font-semibold mb-4">Filters</h2> {/* Added heading */}
       {Object.entries(FILTER_OPTIONS).map(([category, options]) => {
         const selectedFilters = Array.isArray(filters[category]) 
           ? filters[category] 
@@ -34,16 +26,15 @@ export default function PatternFilters({ filters = {}, onFilterChange }) {
             title={category}
             options={options}
             selected={selectedFilters}
-            onSelect={(value) => handleFilterSelect(category, value)}
+            onSelect={(value) => onFilterChange(category, value)}
           />
         );
       })}
       
-      {hasActiveFilters && (
+      {Object.values(filters).some(arr => Array.isArray(arr) && arr.length > 0) && (
         <button
-          onClick={handleClearFilters}
+          onClick={() => onFilterChange('clear')}
           className="w-full mt-4 px-4 py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors"
-          aria-label="Clear all filters"
         >
           Clear all filters
         </button>

@@ -10,17 +10,27 @@ export default function Shop() {
     skillLevel: [],
     age: [],
     yarnWeight: [],
-    gender: [],
-    price: { min: 0, max: 100 }
+    gender: []
   });
 
   const handleFilterChange = (category, value) => {
-    console.log('Filter change:', { category, value });
+    if (category === 'clear') {
+      setFilters({
+        skillLevel: [],
+        age: [],
+        yarnWeight: [],
+        gender: []
+      });
+      return;
+    }
+
     setFilters(prev => ({
       ...prev,
-      [category]: prev[category].includes(value)
-        ? prev[category].filter(item => item !== value)
-        : [...prev[category], value]
+      [category]: Array.isArray(prev[category]) 
+        ? prev[category].includes(value)
+          ? prev[category].filter(item => item !== value)
+          : [...prev[category], value]
+        : [value]
     }));
   };
 
@@ -30,7 +40,7 @@ export default function Shop() {
 
   const filteredPatterns = patterns.filter(pattern => {
     return Object.entries(filters).every(([category, selectedValues]) => {
-      if (selectedValues.length === 0) return true;
+      if (!Array.isArray(selectedValues) || selectedValues.length === 0) return true;
       return selectedValues.includes(pattern[category]);
     });
   });
@@ -46,6 +56,9 @@ export default function Shop() {
           />
         </div>
         <div className="lg:col-span-3">
+          <div className="mb-4 text-sm text-gray-600">
+            {filteredPatterns.length} {filteredPatterns.length === 1 ? 'pattern' : 'patterns'} found
+          </div>
           <PatternGrid patterns={filteredPatterns} />
         </div>
       </div>

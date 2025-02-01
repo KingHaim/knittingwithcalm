@@ -1,13 +1,8 @@
 import React from 'react';
-import FilterSection from './FilterSection';
-import { FILTER_OPTIONS } from '../../constants/filterOptions';
+import { FILTER_OPTIONS } from '../constants/filterOptions';
 
 export default function PatternFilters({ filters, onFilterChange }) {
-  // Add debug logging
-  console.log('PatternFilters props:', { filters, FILTER_OPTIONS });
-
-  if (!filters) {
-    console.warn('No filters provided to PatternFilters');
+  if (!filters || typeof filters !== 'object') {
     return null;
   }
 
@@ -32,6 +27,14 @@ export default function PatternFilters({ filters, onFilterChange }) {
           </div>
         </div>
       ))}
+      {Object.values(filters).some(arr => Array.isArray(arr) && arr.length > 0) && (
+        <button
+          onClick={() => onFilterChange('clear')}
+          className="w-full mt-4 px-4 py-2 text-sm bg-gray-100 text-gray-600 hover:bg-gray-200 rounded"
+        >
+          Clear all filters
+        </button>
+      )}
     </aside>
   );
 }

@@ -6,7 +6,7 @@ import { FILTER_OPTIONS } from '../constants/filterOptions';
 
 export default function Shop() {
   const { data: patterns, isLoading, error } = usePatterns();
-  
+
   const [filters, setFilters] = useState({
     skillLevel: [],
     age: [],
@@ -16,7 +16,6 @@ export default function Shop() {
 
   const handleFilterChange = (category, value) => {
     console.log('Handling filter change:', { category, value });
-    
     setFilters(prevFilters => {
       const currentFilters = prevFilters[category] || [];
       const newFilters = currentFilters.includes(value)
@@ -35,7 +34,11 @@ export default function Shop() {
   }
 
   if (error) {
-    return <div className="container mx-auto px-4 py-8">Error: {error.message}</div>;
+    return (
+      <div className="container mx-auto px-4 py-8">
+        Error: {error.message}
+      </div>
+    );
   }
 
   const filteredPatterns = patterns?.filter(pattern => {
@@ -54,6 +57,7 @@ export default function Shop() {
         <div className="bg-gray-50 p-4 rounded-lg">
           <PatternFilters 
             filters={filters}
+            filterOptions={FILTER_OPTIONS}  // Pass the available filter options
             onFilterChange={handleFilterChange}
           />
         </div>

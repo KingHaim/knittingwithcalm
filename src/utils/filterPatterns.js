@@ -4,8 +4,8 @@ export function filterPatterns(patterns = [], filters) {
   if (!patterns) return [];
   
   return patterns.filter(pattern => {
-    // Log each pattern being filtered
-    console.log('Checking pattern:', pattern);
+    // Skip price filter if price object is not properly defined
+    const priceFilter = filters.price && typeof filters.price.min === 'number' && typeof filters.price.max === 'number';
     
     if (filters.skillLevel.length && !filters.skillLevel.includes(pattern.skillLevel)) {
       return false;
@@ -23,7 +23,7 @@ export function filterPatterns(patterns = [], filters) {
       return false;
     }
     
-    if (pattern.price < filters.price.min || pattern.price > filters.price.max) {
+    if (priceFilter && (pattern.price < filters.price.min || pattern.price > filters.price.max)) {
       return false;
     }
     

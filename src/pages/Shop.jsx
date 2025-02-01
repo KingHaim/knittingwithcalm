@@ -31,7 +31,7 @@ export default function Shop() {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-4xl font-primary mb-8">Shop Patterns</h1>
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        <div className="bg-gray-50 p-4 rounded-lg"> {/* Added padding and rounded corners */}
+        <div className="bg-gray-50 p-4 rounded-lg">
           <PatternFilters 
             filters={filters}
             onFilterChange={handleFilterChange} 

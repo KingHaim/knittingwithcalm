@@ -4,7 +4,8 @@ const initialFilters = {
   skillLevel: [],
   age: [],
   yarnWeight: [],
-  gender: []
+  gender: [],
+  price: { min: 0, max: 100 } // Add price filter
 };
 
 export function usePatternFilters() {
@@ -12,6 +13,15 @@ export function usePatternFilters() {
 
   const updateFilter = useCallback((category, value) => {
     setFilters(current => {
+      // Handle price filter separately
+      if (category === 'price') {
+        return {
+          ...current,
+          price: value
+        };
+      }
+
+      // Handle array-based filters
       const values = current[category];
       const updated = values.includes(value)
         ? values.filter(v => v !== value)

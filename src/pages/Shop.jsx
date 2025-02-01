@@ -5,6 +5,10 @@ import { usePatterns } from '../hooks/usePatterns';
 import { filterPatterns } from '../utils/filterPatterns';
 
 export default function Shop() {
+  // Get patterns data using the hook
+  const { data: patterns, isLoading, error } = usePatterns();
+
+  // Initialize filters state
   const [filters, setFilters] = useState({
     skillLevel: [],
     age: [],
@@ -13,7 +17,19 @@ export default function Shop() {
     price: { min: 0, max: 100 }
   });
   
+  // Debug log to check data
+  console.log('Shop component state:', {
+    patterns,
+    isLoading,
+    error,
+    filters,
+    patternsLength: patterns?.length
+  });
+
+  // Handle filter changes
   const handleFilterChange = (category, value) => {
+    console.log('Filter change:', { category, value });
+    
     if (category === 'clear') {
       setFilters({
         skillLevel: [],
@@ -30,30 +46,36 @@ export default function Shop() {
     }
   };
 
+  // Filter patterns based on current filters
   const filteredPatterns = patterns ? filterPatterns(patterns, filters) : [];
 
-  // Debug log in production
-  console.log('Shop data:', { 
-    patterns, 
-    isLoading, 
-    error,
-    patternsType: typeof patterns,
-    isArray: Array.isArray(patterns)
-  });
+  // Loading and error states
+  if (isLoading) return (
+    <div className="container mx-auto px-4 py-8">
+      <div>Loading patterns...</div>
+    </div>
+  );
 
-  // Wait for data
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error loading patterns</div>;
-  if (!patterns) return <div>No patterns available</div>;
-  if (!Array.isArray(patterns)) return <div>Invalid patterns data</div>;
+  if (error) return (
+    <div className="container mx-auto px-4 py-8">
+      <div>Error loading patterns: {error.message}</div>
+    </div>
+  );
 
+  if (!patterns || !Array.isArray(patterns)) return (
+    <div className="container mx-auto px-4 py-8">
+      <div>No patterns available</div>
+    </div>
+  );
+
+  // Main render
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-4xl font-primary mb-8">Shop Patterns</h1>
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         <div>
           <PatternFilters 
-            filters={filters}  // Changed from patterns to filters
+            filters={filters}
             onFilterChange={handleFilterChange} 
           />
         </div>
@@ -62,7 +84,7 @@ export default function Shop() {
           <div className="mb-4 text-sm text-gray-600">
             {filteredPatterns.length} {filteredPatterns.length === 1 ? 'pattern' : 'patterns'} found
           </div>
-          <PatternGrid patterns={filteredPatterns} /> {/* Changed from patterns to filteredPatterns */}
+          <PatternGrid patterns={filteredPatterns} />
         </div>
       </div>
     </div>

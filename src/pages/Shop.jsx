@@ -50,7 +50,7 @@ export default function Shop() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         <div>
           <PatternFilters 
-            patterns={patterns} 
+            patterns={filters} 
             onFilterChange={handleFilterChange} 
           />
         </div>

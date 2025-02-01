@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import PatternFilters from '../components/PatternFilters';
 import PatternGrid from '../components/shop/PatternGrid';
 import { usePatterns } from '../hooks/usePatterns';
+import { FILTER_OPTIONS } from '../constants/filterOptions';
 
 export default function Shop() {
   const { data: patterns, isLoading, error } = usePatterns();
+  
   const [filters, setFilters] = useState({
     skillLevel: [],
     age: [],
@@ -13,36 +15,37 @@ export default function Shop() {
   });
 
   const handleFilterChange = (category, value) => {
-    if (category === 'clear') {
-      setFilters({
-        skillLevel: [],
-        age: [],
-        yarnWeight: [],
-        gender: []
-      });
-      return;
-    }
-
-    setFilters(prev => ({
-      ...prev,
-      [category]: Array.isArray(prev[category]) 
-        ? prev[category].includes(value)
-          ? prev[category].filter(item => item !== value)
-          : [...prev[category], value]
-        : [value]
-    }));
+    console.log('Handling filter change:', { category, value });
+    
+    setFilters(prevFilters => {
+      const currentFilters = prevFilters[category] || [];
+      const newFilters = currentFilters.includes(value)
+        ? currentFilters.filter(item => item !== value)
+        : [...currentFilters, value];
+        
+      return {
+        ...prevFilters,
+        [category]: newFilters
+      };
+    });
   };
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
-  if (!patterns) return <div>No patterns available</div>;
+  if (isLoading) {
+    return <div className="container mx-auto px-4 py-8">Loading...</div>;
+  }
 
-  const filteredPatterns = patterns.filter(pattern => {
+  if (error) {
+    return <div className="container mx-auto px-4 py-8">Error: {error.message}</div>;
+  }
+
+  const filteredPatterns = patterns?.filter(pattern => {
+    if (!pattern) return false;
+    
     return Object.entries(filters).every(([category, selectedValues]) => {
-      if (!Array.isArray(selectedValues) || selectedValues.length === 0) return true;
+      if (!selectedValues || selectedValues.length === 0) return true;
       return selectedValues.includes(pattern[category]);
     });
-  });
+  }) || [];
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -55,6 +58,9 @@ export default function Shop() {
           />
         </div>
         <div className="lg:col-span-3">
+          <div className="mb-4 text-sm text-gray-600">
+            {filteredPatterns.length} {filteredPatterns.length === 1 ? 'pattern' : 'patterns'} found
+          </div>
           <PatternGrid patterns={filteredPatterns} />
         </div>
       </div>

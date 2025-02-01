@@ -2,8 +2,10 @@ import React from 'react';
 import { FILTER_OPTIONS } from '../constants/filterOptions';
 
 export default function PatternFilters({ filters, onFilterChange }) {
-  // Remove console.log to avoid duplicate debug declarations
+  console.log('PatternFilters received:', { filters, FILTER_OPTIONS });
+
   if (!filters || typeof filters !== 'object') {
+    console.error('Invalid filters prop:', filters);
     return null;
   }
 
@@ -15,10 +17,10 @@ export default function PatternFilters({ filters, onFilterChange }) {
           <h3 className="text-lg font-medium mb-2 capitalize">{category}</h3>
           <div className="space-y-2">
             {options.map((option) => (
-              <label key={option} className="flex items-center">
+              <label key={option} className="flex items-center cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={Array.isArray(filters[category]) && filters[category].includes(option)}
+                  checked={filters[category]?.includes(option) || false}
                   onChange={() => onFilterChange(category, option)}
                   className="form-checkbox h-4 w-4 text-blue-600"
                 />

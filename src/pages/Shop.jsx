@@ -1,36 +1,29 @@
-import React, { useState } from 'react';
-import PatternFilters from '../components/PatternFilters';
+import React from 'react';
+import PatternFilters from '../components/shop/PatternFilters';
 import PatternGrid from '../components/shop/PatternGrid';
 import { usePatterns } from '../hooks/usePatterns';
+import { usePatternFilters } from '../hooks/usePatternFilters';
 import { FILTER_OPTIONS } from '../constants/filterOptions';
 
 export default function Shop() {
   const { data: patterns, isLoading, error } = usePatterns();
-
-  const [filters, setFilters] = useState({
-    skillLevel: [],
-    age: [],
-    yarnWeight: [],
-    gender: []
-  });
+  const { filters, updateFilter, clearFilters } = usePatternFilters();
 
   const handleFilterChange = (category, value) => {
-    console.log('Handling filter change:', { category, value });
-    setFilters(prevFilters => {
-      const currentFilters = prevFilters[category] || [];
-      const newFilters = currentFilters.includes(value)
-        ? currentFilters.filter(item => item !== value)
-        : [...currentFilters, value];
-        
-      return {
-        ...prevFilters,
-        [category]: newFilters
-      };
-    });
+    console.log("Handling filter change:", { category, value });
+    if (category === "clear") {
+      clearFilters();
+    } else {
+      updateFilter(category, value);
+    }
   };
 
   if (isLoading) {
-    return <div className="container mx-auto px-4 py-8">Loading...</div>;
+    return (
+      <div className="container mx-auto px-4 py-8">
+        Loading...
+      </div>
+    );
   }
 
   if (error) {
@@ -41,9 +34,8 @@ export default function Shop() {
     );
   }
 
-  const filteredPatterns = patterns?.filter(pattern => {
+  const filteredPatterns = patterns?.filter((pattern) => {
     if (!pattern) return false;
-    
     return Object.entries(filters).every(([category, selectedValues]) => {
       if (!selectedValues || selectedValues.length === 0) return true;
       return selectedValues.includes(pattern[category]);
@@ -57,13 +49,14 @@ export default function Shop() {
         <div className="bg-gray-50 p-4 rounded-lg">
           <PatternFilters 
             filters={filters}
-            filterOptions={FILTER_OPTIONS}  // Pass the available filter options
+            filterOptions={FILTER_OPTIONS}
             onFilterChange={handleFilterChange}
           />
         </div>
         <div className="lg:col-span-3">
           <div className="mb-4 text-sm text-gray-600">
-            {filteredPatterns.length} {filteredPatterns.length === 1 ? 'pattern' : 'patterns'} found
+            {filteredPatterns.length}{" "}
+            {filteredPatterns.length === 1 ? 'pattern' : 'patterns'} found
           </div>
           <PatternGrid patterns={filteredPatterns} />
         </div>

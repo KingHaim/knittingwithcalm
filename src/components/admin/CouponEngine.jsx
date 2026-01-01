@@ -5,7 +5,7 @@ import Button from '../ui/Button';
 import {
     Plus, Trash2, Tag, Percent, Calendar,
     Users, CheckCircle2, ChevronDown, ChevronUp,
-    Package, Layout
+    Package, Layout, Gift
 } from 'lucide-react';
 
 export default function CouponEngine() {
@@ -24,7 +24,8 @@ export default function CouponEngine() {
         applicable_pattern_ids: [],
         start_date: new Date().toISOString().split('T')[0],
         end_date: '',
-        usage_limit: ''
+        usage_limit: '',
+        gift_pattern_id: ''
     });
 
     useEffect(() => {
@@ -59,9 +60,10 @@ export default function CouponEngine() {
             const payload = {
                 ...formData,
                 code: formData.code.toUpperCase().replace(/\s/g, ''),
-                value: parseFloat(formData.value),
+                value: formData.type === 'free_pattern' ? 0 : parseFloat(formData.value),
                 usage_limit: formData.usage_limit ? parseInt(formData.usage_limit) : null,
-                end_date: formData.end_date || null
+                end_date: formData.end_date || null,
+                gift_pattern_id: formData.type === 'free_pattern' ? formData.gift_pattern_id : null
             };
 
             await couponService.createCoupon(payload);
@@ -75,7 +77,8 @@ export default function CouponEngine() {
                 applicable_pattern_ids: [],
                 start_date: new Date().toISOString().split('T')[0],
                 end_date: '',
-                usage_limit: ''
+                usage_limit: '',
+                gift_pattern_id: ''
             });
             fetchInitialData();
             setTimeout(() => setSuccess(null), 3000);
@@ -167,29 +170,50 @@ export default function CouponEngine() {
                                     >
                                         <option value="percentage">Percentage (%)</option>
                                         <option value="fixed">Fixed Amount (€)</option>
+                                        <option value="free_pattern">Free Pattern Gift 🎁</option>
                                     </select>
                                 </div>
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">
-                                        Value
+                                        {formData.type === 'free_pattern' ? 'Gift Details' : 'Discount Value'}
                                     </label>
                                     <div className="relative">
-                                        {formData.type === 'percentage' ? (
-                                            <Percent className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                                        ) : (
-                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">€</span>
-                                        )}
+                                        {formData.type === 'percentage' && <Percent className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />}
+                                        {formData.type === 'fixed' && <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">€</span>}
+                                        {formData.type === 'free_pattern' && <Gift className="absolute left-3 top-1/2 -translate-y-1/2 text-primary" size={18} />}
+
                                         <input
-                                            type="number"
-                                            value={formData.value}
+                                            type={formData.type === 'free_pattern' ? 'text' : 'number'}
+                                            value={formData.type === 'free_pattern' ? '100% Free' : formData.value}
+                                            disabled={formData.type === 'free_pattern'}
                                             onChange={(e) => setFormData({ ...formData, value: e.target.value })}
-                                            className="w-full pl-10 pr-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-primary outline-none"
+                                            className={`w-full pl-10 pr-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-primary outline-none ${formData.type === 'free_pattern' ? 'font-bold text-primary italic cursor-not-allowed' : ''}`}
                                             placeholder="20"
-                                            required
+                                            required={formData.type !== 'free_pattern'}
                                         />
                                     </div>
                                 </div>
                             </div>
+
+                            {/* Gift Pattern Selection (Conditional) */}
+                            {formData.type === 'free_pattern' && (
+                                <div className="md:col-span-2 space-y-4">
+                                    <label className="block text-sm font-bold text-gray-700 uppercase tracking-wide">
+                                        Select the pattern to give for free
+                                    </label>
+                                    <select
+                                        value={formData.gift_pattern_id}
+                                        onChange={(e) => setFormData({ ...formData, gift_pattern_id: e.target.value })}
+                                        className="w-full px-4 py-4 bg-primary/5 border-2 border-primary/20 rounded-xl focus:ring-2 focus:ring-primary outline-none font-medium"
+                                        required
+                                    >
+                                        <option value="">-- Choose a pattern --</option>
+                                        {patterns.map(p => (
+                                            <option key={p.id} value={p.id}>{p.title}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
 
                             {/* Applies To */}
                             <div className="md:col-span-2">
@@ -201,8 +225,8 @@ export default function CouponEngine() {
                                         type="button"
                                         onClick={() => setFormData({ ...formData, applies_to: 'all' })}
                                         className={`p-4 rounded-xl border-2 transition-all flex items-center gap-3 ${formData.applies_to === 'all'
-                                                ? 'border-primary bg-primary/5 text-primary'
-                                                : 'border-gray-100 bg-white text-gray-400 hover:border-gray-200'
+                                            ? 'border-primary bg-primary/5 text-primary'
+                                            : 'border-gray-100 bg-white text-gray-400 hover:border-gray-200'
                                             }`}
                                     >
                                         <Layout size={20} />
@@ -212,8 +236,8 @@ export default function CouponEngine() {
                                         type="button"
                                         onClick={() => setFormData({ ...formData, applies_to: 'specific' })}
                                         className={`p-4 rounded-xl border-2 transition-all flex items-center gap-3 ${formData.applies_to === 'specific'
-                                                ? 'border-primary bg-primary/5 text-primary'
-                                                : 'border-gray-100 bg-white text-gray-400 hover:border-gray-200'
+                                            ? 'border-primary bg-primary/5 text-primary'
+                                            : 'border-gray-100 bg-white text-gray-400 hover:border-gray-200'
                                             }`}
                                     >
                                         <Package size={20} />
@@ -229,8 +253,8 @@ export default function CouponEngine() {
                                                     key={pattern.id}
                                                     onClick={() => togglePatternSelection(pattern.id)}
                                                     className={`p-3 rounded-lg border cursor-pointer transition-all flex items-center gap-2 ${formData.applicable_pattern_ids.includes(pattern.id)
-                                                            ? 'bg-white border-primary shadow-sm text-primary'
-                                                            : 'bg-white/50 border-transparent text-gray-500 grayscale opacity-60'
+                                                        ? 'bg-white border-primary shadow-sm text-primary'
+                                                        : 'bg-white/50 border-transparent text-gray-500 grayscale opacity-60'
                                                         }`}
                                                 >
                                                     <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${formData.applicable_pattern_ids.includes(pattern.id) ? 'bg-primary border-primary' : 'border-gray-300'
@@ -326,10 +350,20 @@ export default function CouponEngine() {
 
                                 <div className="mb-6">
                                     <div className="text-3xl font-black text-gray-900 mb-1">
-                                        {coupon.type === 'percentage' ? `${coupon.value}%` : `${coupon.value}€`}
+                                        {coupon.type === 'percentage' && `${coupon.value}%`}
+                                        {coupon.type === 'fixed' && `${coupon.value}€`}
+                                        {coupon.type === 'free_pattern' && (
+                                            <div className="flex items-center gap-2 text-primary">
+                                                <Gift size={24} /> 100% FREE
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="text-sm font-medium text-gray-500 uppercase tracking-tighter">
-                                        OFF on {coupon.applies_to === 'all' ? 'entire cart' : `${coupon.applicable_pattern_ids?.length || 0} products`}
+                                        {coupon.type === 'free_pattern' ? (
+                                            <>Gift: <span className="text-gray-900">{patterns.find(p => p.id === coupon.gift_pattern_id)?.title || 'Selected Pattern'}</span></>
+                                        ) : (
+                                            <>OFF on {coupon.applies_to === 'all' ? 'entire cart' : `${coupon.applicable_pattern_ids?.length || 0} products`}</>
+                                        )}
                                     </div>
                                 </div>
 

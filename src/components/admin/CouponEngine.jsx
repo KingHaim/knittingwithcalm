@@ -55,7 +55,9 @@ export default function CouponEngine() {
 
         try {
             // Validate data
-            if (!formData.code || !formData.value) throw new Error('Code and Value are required');
+            if (!formData.code) throw new Error('Code is required');
+            if (formData.type !== 'free_pattern' && !formData.value) throw new Error('Discount value is required');
+            if (formData.type === 'free_pattern' && !formData.gift_pattern_id) throw new Error('Please select a gift pattern');
 
             const payload = {
                 ...formData,

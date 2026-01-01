@@ -22,7 +22,8 @@ export default function AdminPatterns() {
       const data = await patternService.getPatterns();
       setPatterns(data);
     } catch (err) {
-      setError('Error charging patterns');
+      setError(`Error al cargar patrones: ${err.message || 'Error desconocido'}`);
+      console.error('Supabase Error:', err);
     }
   };
 

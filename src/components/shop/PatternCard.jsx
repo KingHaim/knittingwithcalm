@@ -9,10 +9,12 @@ export default function PatternCard({ pattern }) {
   const { items, addItem, removeItem } = useCart();
   const isInCart = items.some(item => item.id === pattern.id);
 
-  if (!pattern) return null;
+  const { title, price, previous_price, categories, yarn_weight, main_image, images, status, size_tag } = pattern;
 
-  const { title, price, category, yarn_weight, images } = pattern;
-  const image = images?.[0] || '';
+  // Don't show drafts in shop
+  if (status === 'draft') return null;
+
+  const image = main_image || images?.[0] || '';
   const yarnWeight = yarn_weight;
 
   const handleCartAction = () => {
@@ -27,8 +29,8 @@ export default function PatternCard({ pattern }) {
     <article className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
       <PatternImage src={image} alt={title} />
       <div className="p-4">
-        <PatternDetails title={title} price={price} />
-        <PatternTags category={category} yarnWeight={yarnWeight} />
+        <PatternDetails title={title} price={price} previousPrice={previous_price} />
+        <PatternTags categories={categories} yarnWeight={yarnWeight} size={size_tag} />
         <div className="mt-4">
           <Button
             onClick={handleCartAction}

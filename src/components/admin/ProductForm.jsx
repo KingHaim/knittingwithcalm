@@ -5,29 +5,51 @@ import { Plus, Trash2 } from 'lucide-react';
 
 const DIFFICULTY_LEVELS = ['Principiante', 'Intermedio', 'Avanzado', 'Experto'];
 const YARN_WEIGHTS = ['Lace', 'Fingering', 'Sport', 'DK', 'Worsted', 'Aran', 'Bulky', 'Super Bulky'];
-const LANGUAGES = ['Español', 'English', 'Français', 'Deutsch', 'Italiano'];
+const CATEGORIES = ['Bebe', 'Infantil', 'Mujer', 'Hombre', 'Accesorios'];
 
 export default function ProductForm({ initialData, onSubmit, onCancel, isLoading }) {
     const data = initialData || {};
     const [formData, setFormData] = useState({
         title: data.title || '',
+        slug: data.slug || '',
         description: data.description || '',
         price: data.price || '',
+        previous_price: data.previous_price || '',
+        status: data.status || 'draft',
         difficulty_level: data.difficulty_level || DIFFICULTY_LEVELS[0],
         yarn_weight: data.yarn_weight || YARN_WEIGHTS[0],
         languages: data.languages || [LANGUAGES[0]],
+        categories: data.categories || [],
+        size_tag: data.size_tag || '',
         materials: data.materials || { yarn: '', needles: '', other: [] },
         video_url: data.video_url || '',
         category: data.category || 'Patterns',
         ...data
     });
 
-    const [images, setImages] = useState([]);
-    const [pdf, setPdf] = useState(null);
+    const [images, setImages] = useState(data.images || []);
+    const [mainImage, setMainImage] = useState(data.main_image || '');
+    const [pdfFiles, setPdfFiles] = useState(data.pdf_files || []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        setFormData(prev => {
+            const newData = { ...prev, [name]: value };
+            // Auto-generate slug from title if slug is empty or matches previous title slug
+            if (name === 'title' && (!prev.slug || prev.slug === prev.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''))) {
+                newData.slug = value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+            }
+            return newData;
+        });
+    };
+
+    const handleCategoryToggle = (cat) => {
+        setFormData(prev => {
+            const cats = prev.categories.includes(cat)
+                ? prev.categories.filter(c => c !== cat)
+                : [...prev.categories, cat];
+            return { ...prev, categories: cats };
+        });
     };
 
     const handleLanguageToggle = (lang) => {
@@ -35,6 +57,10 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isLoading
             const langs = prev.languages.includes(lang)
                 ? prev.languages.filter(l => l !== lang)
                 : [...prev.languages, lang];
+            // When removing a language, also remove associated PDF if any
+            if (prev.languages.includes(lang)) {
+                setPdfFiles(current => current.filter(p => p.language !== lang));
+            }
             return { ...prev, languages: langs };
         });
     };
@@ -69,25 +95,62 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isLoading
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSubmit({ ...formData, images, pdf });
+        onSubmit({
+            ...formData,
+            images,
+            main_image: mainImage || images[0], // Default to first image if none selected
+            pdf_files: pdfFiles
+        });
     };
 
     return (
         <form onSubmit={handleSubmit} className="space-y-8 bg-white p-8 rounded-xl shadow-sm border border-gray-100">
+            <div className="flex justify-between items-center pb-4 border-bottom border-gray-100 italic">
+                <div className="flex items-center gap-4">
+                    <span className="text-sm font-medium text-gray-500">Estado:</span>
+                    <label className="inline-flex items-center cursor-pointer">
+                        <input
+                            type="checkbox"
+                            className="sr-only peer"
+                            checked={formData.status === 'published'}
+                            onChange={(e) => setFormData({ ...formData, status: e.target.checked ? 'published' : 'draft' })}
+                        />
+                        <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                        <span className="ms-3 text-sm font-medium text-gray-900">
+                            {formData.status === 'published' ? 'Publicado' : 'Borrador'}
+                        </span>
+                    </label>
+                </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Left Column: Basic Info */}
                 <div className="space-y-6">
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">Título del Producto</label>
-                        <input
-                            type="text"
-                            name="title"
-                            value={formData.title}
-                            onChange={handleChange}
-                            placeholder="Ej: Cardigan Serena"
-                            className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-                            required
-                        />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Título del Producto</label>
+                            <input
+                                type="text"
+                                name="title"
+                                value={formData.title}
+                                onChange={handleChange}
+                                placeholder="Ej: Cardigan Serena"
+                                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Slug (URL)</label>
+                            <input
+                                type="text"
+                                name="slug"
+                                value={formData.slug}
+                                onChange={handleChange}
+                                placeholder="cardigan-serena"
+                                className="w-full px-4 py-2 rounded-lg border border-gray-100 bg-gray-50 text-gray-600 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                                required
+                            />
+                        </div>
                     </div>
 
                     <div>
@@ -102,7 +165,7 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isLoading
                         />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-3 gap-4">
                         <div>
                             <label className="block text-sm font-semibold text-gray-700 mb-2">Precio (€)</label>
                             <input
@@ -116,6 +179,32 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isLoading
                             />
                         </div>
                         <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Precio Anterior</label>
+                            <input
+                                type="number"
+                                name="previous_price"
+                                value={formData.previous_price}
+                                onChange={handleChange}
+                                step="0.01"
+                                placeholder="Ej: 10.00"
+                                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Talla / Tag</label>
+                            <input
+                                type="text"
+                                name="size_tag"
+                                value={formData.size_tag}
+                                onChange={handleChange}
+                                placeholder="S-M-L o Única"
+                                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
                             <label className="block text-sm font-semibold text-gray-700 mb-2">Nivel de Dificultad</label>
                             <select
                                 name="difficulty_level"
@@ -128,24 +217,43 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isLoading
                                 ))}
                             </select>
                         </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Grosor de Lana</label>
+                            <select
+                                name="yarn_weight"
+                                value={formData.yarn_weight}
+                                onChange={handleChange}
+                                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                            >
+                                {YARN_WEIGHTS.map(weight => (
+                                    <option key={weight} value={weight}>{weight}</option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">Grosor de Lana</label>
-                        <select
-                            name="yarn_weight"
-                            value={formData.yarn_weight}
-                            onChange={handleChange}
-                            className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-                        >
-                            {YARN_WEIGHTS.map(weight => (
-                                <option key={weight} value={weight}>{weight}</option>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Sección / Categorías</label>
+                        <div className="flex flex-wrap gap-2">
+                            {CATEGORIES.map(cat => (
+                                <button
+                                    key={cat}
+                                    type="button"
+                                    onClick={() => handleCategoryToggle(cat)}
+                                    className={`px-3 py-1 rounded-full text-sm transition-colors ${formData.categories.includes(cat)
+                                        ? 'bg-primary text-white border-primary'
+                                        : 'bg-gray-50 text-gray-600 border border-gray-200 hover:border-primary'
+                                        }`}
+                                >
+                                    {cat}
+                                </button>
                             ))}
-                        </select>
+                        </div>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">Idiomas Disponibles</label>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Idiomas Seleccionados</label>
+                        <p className="text-xs text-gray-500 mb-2">Selecciona los idiomas para habilitar la subida de sus correspondientes PDFs.</p>
                         <div className="flex flex-wrap gap-2">
                             {LANGUAGES.map(lang => (
                                 <button
@@ -153,8 +261,8 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isLoading
                                     type="button"
                                     onClick={() => handleLanguageToggle(lang)}
                                     className={`px-3 py-1 rounded-full text-sm transition-colors ${formData.languages.includes(lang)
-                                        ? 'bg-primary text-white border-primary'
-                                        : 'bg-gray-50 text-gray-600 border border-gray-200 hover:border-primary'
+                                        ? 'bg-secondary text-white border-secondary'
+                                        : 'bg-gray-50 text-gray-600 border border-gray-200 hover:border-secondary'
                                         }`}
                                 >
                                     {lang}
@@ -167,8 +275,13 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isLoading
                 {/* Right Column: Files & Materials */}
                 <div className="space-y-6">
                     <FileUploadManager
+                        initialImages={images}
+                        initialMainImage={mainImage}
+                        initialPdfs={pdfFiles}
+                        selectedLanguages={formData.languages}
                         onImagesChange={setImages}
-                        onPdfChange={setPdf}
+                        onMainImageChange={setMainImage}
+                        onPdfsChange={setPdfFiles}
                     />
 
                     <div className="space-y-4">
@@ -177,6 +290,7 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isLoading
                             <label className="block text-xs text-gray-500 mb-1">Lana Sugerida</label>
                             <input
                                 type="text"
+                                name="materials_yarn"
                                 value={formData.materials.yarn}
                                 onChange={(e) => handleMaterialChange('yarn', e.target.value)}
                                 placeholder="Ej: 3 ovillos de Lana Merino"

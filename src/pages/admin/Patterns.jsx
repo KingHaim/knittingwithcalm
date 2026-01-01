@@ -31,15 +31,16 @@ export default function AdminPatterns() {
     setIsLoading(true);
     try {
       if (editingPattern) {
-        // Update logic would go here
+        // Update logic: for now we use createPattern which we'll enhance to handle update
+        await patternService.createPattern({ ...formData, id: editingPattern.id });
       } else {
-        await patternService.createPattern(formData, formData.images, formData.pdf);
+        await patternService.createPattern(formData);
       }
       setShowForm(false);
       setEditingPattern(null);
       fetchPatterns();
     } catch (err) {
-      setError('Error saving product');
+      setError(`Error al guardar: ${err.message}`);
     } finally {
       setIsLoading(false);
     }
@@ -48,7 +49,7 @@ export default function AdminPatterns() {
   const handleDelete = async (pattern) => {
     if (window.confirm('¿Are you sure you want to delete this pattern?')) {
       try {
-        await patternService.deletePattern(pattern.id, pattern.pdf_url, pattern.images);
+        await patternService.deletePattern(pattern.id, pattern.pdf_url, pattern.images, pattern.pdf_files);
         fetchPatterns();
       } catch (err) {
         setError('Error deleting pattern');
@@ -126,15 +127,22 @@ export default function AdminPatterns() {
                     <tr key={pattern.id} className="hover:bg-gray-50/50 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-4">
-                          <img
-                            src={pattern.images?.[0]}
-                            alt={pattern.title}
-                            className="w-12 h-12 rounded object-cover border border-gray-200"
-                          />
+                          <div className="relative">
+                            <img
+                              src={pattern.main_image || pattern.images?.[0]}
+                              alt={pattern.title}
+                              className="w-12 h-12 rounded object-cover border border-gray-200"
+                            />
+                            {pattern.status === 'draft' && (
+                              <span className="absolute -top-1 -left-1 bg-amber-100 text-amber-700 text-[8px] font-bold px-1 rounded border border-amber-200">
+                                BORRADOR
+                              </span>
+                            )}
+                          </div>
                           <div>
                             <div className="font-medium text-gray-900">{pattern.title}</div>
                             <div className="text-xs text-gray-500">
-                              {pattern.languages?.join(', ')}
+                              {pattern.slug}
                             </div>
                           </div>
                         </div>

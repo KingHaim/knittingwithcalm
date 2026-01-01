@@ -2,145 +2,211 @@ import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { X, Upload, FileText, Image as ImageIcon, GripVertical } from 'lucide-react';
 
-export default function FileUploadManager({ 
-  onImagesChange, 
-  onPdfChange, 
-  initialImages = [], 
-  initialPdf = null 
+export default function FileUploadManager({
+  onImagesChange,
+  onMainImageChange,
+  onPdfsChange,
+  initialImages = [],
+  initialMainImage = '',
+  initialPdfs = [],
+  selectedLanguages = []
 }) {
   const [images, setImages] = useState(initialImages);
-  const [pdf, setPdf] = useState(initialPdf);
+  const [mainImage, setMainImage] = useState(initialMainImage);
+  const [pdfs, setPdfs] = useState(initialPdfs); // Each item: { file, url, language }
   const [error, setError] = useState('');
 
+  // IMAGE HANDLING
   const onDropImages = useCallback((acceptedFiles) => {
     const newImages = acceptedFiles.map(file => Object.assign(file, {
       preview: URL.createObjectURL(file)
     }));
-    setImages(prev => [...prev, ...newImages]);
-    onImagesChange([...images, ...newImages]);
-  }, [images, onImagesChange]);
+    const updated = [...images, ...newImages];
+    setImages(updated);
+    onImagesChange(updated);
+    // If no main image yet, set the first one as main
+    if (!mainImage && updated.length > 0) {
+      const first = updated[0].preview || updated[0];
+      setMainImage(first);
+      onMainImageChange(first);
+    }
+  }, [images, mainImage, onImagesChange, onMainImageChange]);
 
+  const removeImage = (index) => {
+    const fileToRemove = images[index];
+    const isMain = (fileToRemove.preview || fileToRemove) === mainImage;
+    const newImages = images.filter((_, i) => i !== index);
+
+    setImages(newImages);
+    onImagesChange(newImages);
+
+    if (isMain && newImages.length > 0) {
+      const nextMain = newImages[0].preview || newImages[0];
+      setMainImage(nextMain);
+      onMainImageChange(nextMain);
+    } else if (isMain) {
+      setMainImage('');
+      onMainImageChange('');
+    }
+  };
+
+  const setAsMain = (index) => {
+    const newMain = images[index].preview || images[index];
+    setMainImage(newMain);
+    onMainImageChange(newMain);
+  };
+
+  // PDF HANDLING
   const onDropPdf = useCallback((acceptedFiles) => {
     const file = acceptedFiles[0];
     if (file && file.type === 'application/pdf') {
-      setPdf(Object.assign(file, {
-        preview: URL.createObjectURL(file)
-      }));
-      onPdfChange(file);
+      // Add as "Unassigned" or pick first missing language
+      const missingLang = selectedLanguages.find(lang => !pdfs.find(p => p.language === lang)) || '';
+
+      const newPdf = {
+        file,
+        preview: URL.createObjectURL(file),
+        language: missingLang,
+        name: file.name
+      };
+
+      const updated = [...pdfs, newPdf];
+      setPdfs(updated);
+      onPdfsChange(updated);
       setError('');
     } else {
-      setError('Please upload a valid PDF file.');
+      setError('Por favor, sube un archivo PDF válido.');
     }
-  }, [onPdfChange]);
+  }, [pdfs, selectedLanguages, onPdfsChange]);
 
-  const removeImage = (index) => {
-    const newImages = images.filter((_, i) => i !== index);
-    setImages(newImages);
-    onImagesChange(newImages);
+  const updatePdfLanguage = (index, lang) => {
+    const updated = [...pdfs];
+    updated[index].language = lang;
+    setPdfs(updated);
+    onPdfsChange(updated);
   };
 
-  const removePdf = () => {
-    setPdf(null);
-    onPdfChange(null);
+  const removePdf = (index) => {
+    const updated = pdfs.filter((_, i) => i !== index);
+    setPdfs(updated);
+    onPdfsChange(updated);
   };
 
-  const { getRootProps: getImageProps, getInputProps: getImageInputProps, isDragActive: imageActive } = useDropzone({
+  const { getRootProps: getImageProps, getInputProps: getImageInputProps } = useDropzone({
     onDrop: onDropImages,
     accept: { 'image/*': [] }
   });
 
-  const { getRootProps: getPdfProps, getInputProps: getPdfInputProps, isDragActive: pdfActive } = useDropzone({
+  const { getRootProps: getPdfProps, getInputProps: getPdfInputProps } = useDropzone({
     onDrop: onDropPdf,
     accept: { 'application/pdf': [] },
     multiple: false
   });
 
-  // Basic image reordering logic (placeholder for actual DnD reordering)
-  const moveImage = (from, to) => {
-    const newImages = [...images];
-    const [moved] = newImages.splice(from, 1);
-    newImages.splice(to, 0, moved);
-    setImages(newImages);
-    onImagesChange(newImages);
-  };
-
   return (
-    <div className="space-y-6">
-      {/* PDF Upload */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Pattern PDF (Required)</label>
-        <div 
-          {...getPdfProps()} 
-          className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
-            pdfActive ? 'border-primary bg-primary/5' : 'border-gray-300 hover:border-primary'
-          }`}
+    <div className="space-y-8">
+      {/* PDF Upload Section */}
+      <div className="space-y-4">
+        <label className="block text-sm font-semibold text-gray-700">Archivos PDF del Patrón</label>
+
+        <div
+          {...getPdfProps()}
+          className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center cursor-pointer hover:border-primary transition-colors bg-gray-50/50"
         >
           <input {...getPdfInputProps()} />
-          {pdf ? (
-            <div className="flex items-center justify-between bg-gray-50 p-3 rounded">
-              <div className="flex items-center space-x-3">
-                <FileText className="text-primary" />
-                <span className="text-sm font-medium truncate max-w-[200px]">{pdf.name || 'Pattern.pdf'}</span>
-              </div>
-              <button 
-                onClick={(e) => { e.stopPropagation(); removePdf(); }}
-                className="p-1 hover:bg-gray-200 rounded"
-              >
-                <X size={16} />
-              </button>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center">
-              <Upload className="text-gray-400 mb-2" />
-              <p className="text-sm text-gray-600">Drag & drop pattern PDF here, or click to select</p>
-            </div>
-          )}
-        </div>
-        {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
-      </div>
-
-      {/* Image Upload */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Product Images (Batch Upload & Reorder)</label>
-        <div 
-          {...getImageProps()} 
-          className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
-            imageActive ? 'border-primary bg-primary/5' : 'border-gray-300 hover:border-primary'
-          }`}
-        >
-          <input {...getImageInputProps()} />
           <div className="flex flex-col items-center">
-            <Upload className="text-gray-400 mb-2" />
-            <p className="text-sm text-gray-600">Drag & drop images here, or click to select</p>
+            <Upload className="text-primary mb-2" size={24} />
+            <p className="text-sm text-gray-600">Sube aquí los PDFs (uno por idioma)</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-          {images.map((file, index) => (
-            <div key={index} className="relative group aspect-square rounded-lg overflow-hidden border border-gray-200">
-              <img 
-                src={file.preview || file} 
-                className="w-full h-full object-cover" 
-                alt={`Preview ${index}`} 
-              />
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center space-x-2">
-                <button 
-                  onClick={() => removeImage(index)}
-                  className="p-1.5 bg-white rounded-full text-red-500 hover:bg-red-50"
-                >
-                  <X size={16} />
-                </button>
-                <div className="cursor-move p-1.5 bg-white rounded-full text-gray-600">
-                  <GripVertical size={16} />
+        {/* List of uploaded PDFs */}
+        <div className="space-y-2">
+          {pdfs.map((item, index) => (
+            <div key={index} className="flex items-center gap-3 bg-white border border-gray-200 p-3 rounded-lg">
+              <FileText className="text-red-500" size={20} />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">{item.name || 'Archivo PDF'}</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-xs text-gray-500">Idioma:</span>
+                  <select
+                    value={item.language}
+                    onChange={(e) => updatePdfLanguage(index, e.target.value)}
+                    className="text-xs border-none bg-gray-100 rounded px-2 py-1 outline-none focus:ring-1 focus:ring-primary"
+                  >
+                    <option value="">Seleccionar idioma...</option>
+                    {selectedLanguages.map(lang => (
+                      <option key={lang} value={lang}>{lang}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
-              {index === 0 && (
-                <span className="absolute top-2 left-2 bg-primary text-white text-[10px] px-2 py-0.5 rounded-full">
-                  Main
-                </span>
-              )}
+              <button
+                onClick={() => removePdf(index)}
+                className="p-1.5 hover:bg-red-50 text-gray-400 hover:text-red-500 rounded-full transition-colors"
+                type="button"
+              >
+                <X size={18} />
+              </button>
             </div>
           ))}
+        </div>
+
+        {/* Warnings for missing PDFs */}
+        {selectedLanguages.filter(lang => !pdfs.find(p => p.language === lang)).map(lang => (
+          <div key={lang} className="text-[10px] text-amber-600 flex items-center gap-1 bg-amber-50 px-2 py-1 rounded">
+            Falta PDF para: <strong>{lang}</strong>
+          </div>
+        ))}
+      </div>
+
+      {/* Image Upload Section */}
+      <div className="space-y-4">
+        <label className="block text-sm font-semibold text-gray-700">Imágenes del Producto</label>
+        <div
+          {...getImageProps()}
+          className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center cursor-pointer hover:border-primary transition-colors bg-gray-50/50"
+        >
+          <input {...getImageInputProps()} />
+          <Upload className="text-primary mx-auto mb-2" size={24} />
+          <p className="text-sm text-gray-600">Sube las fotos aquí</p>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          {images.map((file, index) => {
+            const url = file.preview || file;
+            const isMain = url === mainImage;
+            return (
+              <div key={index} className={`relative aspect-square rounded-xl overflow-hidden border-2 transition-all ${isMain ? 'border-primary ring-2 ring-primary/20' : 'border-gray-100'}`}>
+                <img
+                  src={url}
+                  className="w-full h-full object-cover"
+                  alt={`Preview ${index}`}
+                />
+                <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 p-2">
+                  <button
+                    type="button"
+                    onClick={() => setAsMain(index)}
+                    className="w-full py-1.5 bg-white text-xs font-semibold text-gray-700 rounded-lg hover:bg-primary hover:text-white transition-colors"
+                  >
+                    {isMain ? 'Es Portada' : 'Poner Portada'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => removeImage(index)}
+                    className="p-1.5 bg-red-500 text-white rounded-full hover:bg-red-600"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+                {isMain && (
+                  <div className="absolute top-2 left-2 bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg">
+                    PORTADA
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

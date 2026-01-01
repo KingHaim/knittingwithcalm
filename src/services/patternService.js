@@ -26,43 +26,73 @@ export const patternService = {
     },
 
     /**
-     * Creates a new pattern with images and PDF
+     * Creates or updates a pattern with multiple images and localized PDFs
      */
-    async createPattern(patternData, images, pdf) {
+    async createPattern(fullData) {
         try {
-            // 1. Upload PDF
-            let pdfUrl = '';
-            if (pdf) {
-                pdfUrl = await this.uploadFile(pdf, 'patterns-pdf');
-            }
+            const { images, pdf_files, main_image, ...patternData } = fullData;
 
-            // 2. Upload Images
-            const imageUrls = await Promise.all(
-                images.map(image => this.uploadFile(image, 'patterns-images'))
+            // 1. Upload Images and map URLs
+            const uploadedImageUrls = await Promise.all(
+                images.map(async (img) => {
+                    if (img instanceof File) {
+                        return await this.uploadFile(img, 'patterns-images');
+                    }
+                    return img; // Already a URL
+                })
             );
 
-            // 3. Clean up data and map fields
-            const { images: _, pdf: __, ...cleanedData } = patternData;
+            // 2. Map Main Image (if it was a file, find its new URL)
+            let finalMainImage = mainImage;
+            if (mainImage instanceof File || (mainImage && mainImage.preview)) {
+                // Find matching file in original images to get the index, then use corresponding uploaded URL
+                const index = images.findIndex(img =>
+                    (img.preview === mainImage.preview) || (img === mainImage)
+                );
+                if (index !== -1) {
+                    finalMainImage = uploadedImageUrls[index];
+                }
+            }
 
+            // 3. Upload PDFs with language metadata
+            const finalPdfFiles = await Promise.all(
+                pdf_files.map(async (pdfItem) => {
+                    if (pdfItem.file) {
+                        const url = await this.uploadFile(pdfItem.file, 'patterns-pdf');
+                        return { url, language: pdfItem.language };
+                    }
+                    return { url: pdfItem.url, language: pdfItem.language };
+                })
+            );
+
+            // 4. Map the first PDF to pdf_url for backward compatibility (optional but safe)
+            const primaryPdfUrl = finalPdfFiles.length > 0 ? finalPdfFiles[0].url : '';
+
+            // 5. Build Final Payload
             const payload = {
-                ...cleanedData,
-                skill_level: cleanedData.difficulty_level || 'Principiante',
-                pdf_url: pdfUrl,
-                images: imageUrls,
+                ...patternData,
+                skill_level: patternData.difficulty_level || 'Principiante',
+                images: uploadedImageUrls,
+                main_image: finalMainImage || uploadedImageUrls[0],
+                pdf_files: finalPdfFiles,
+                pdf_url: primaryPdfUrl, // Keep for legacy if needed
                 updated_at: new Date()
             };
 
-            // 4. Save pattern to database
+            // Remove temporary UI fields
+            delete payload.pdf; // Old field
+
+            // 6. Save to database (Upsert)
             const { data, error } = await supabase
                 .from('patterns')
-                .insert([payload])
+                .upsert([payload])
                 .select()
                 .single();
 
             if (error) throw error;
             return data;
         } catch (error) {
-            console.error('Error creating pattern:', error);
+            console.error('Error in createPattern:', error);
             throw error;
         }
     },
@@ -83,7 +113,7 @@ export const patternService = {
     /**
      * Deletes a pattern and its associated files
      */
-    async deletePattern(id, pdfUrl, imageUrls) {
+    async deletePattern(id, pdfUrl, imageUrls, pdfFiles = []) {
         // 1. Delete record from database
         const { error: dbError } = await supabase
             .from('patterns')
@@ -92,10 +122,14 @@ export const patternService = {
 
         if (dbError) throw dbError;
 
-        // 2. Cleanup Storage (Best effort, don't fail if files are already gone)
+        // 2. Cleanup Storage (Best effort)
         try {
-            // Cleanup PDF
-            if (pdfUrl) {
+            // Cleanup PDF files (new structure)
+            if (pdfFiles && pdfFiles.length > 0) {
+                const pdfPaths = pdfFiles.map(p => p.url.split('/').pop());
+                await supabase.storage.from('patterns-pdf').remove(pdfPaths);
+            } else if (pdfUrl) {
+                // Legacy cleanup
                 const pdfPath = pdfUrl.split('/').pop();
                 await supabase.storage.from('patterns-pdf').remove([pdfPath]);
             }
@@ -107,7 +141,6 @@ export const patternService = {
             }
         } catch (storageError) {
             console.warn('Failed to cleanup storage files:', storageError);
-            // We don't throw here to ensure the UI thinks deletion was successful if DB record is gone
         }
     }
 };

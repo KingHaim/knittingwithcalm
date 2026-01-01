@@ -17,7 +17,14 @@ export function useAuth() {
       return { user: mockUser };
     },
     signIn: async (email, password) => {
-      // Temporary mock authentication
+      // Admin credentials check
+      if (email === 'ainhoasm' && password === '452136789') {
+        const adminUser = { id: 'admin-id', email: 'ainhoasm', role: 'admin' };
+        setUser(adminUser);
+        return { user: adminUser };
+      }
+
+      // Temporary mock authentication for others
       const mockUser = { id: '1', email };
       setUser(mockUser);
       return { user: mockUser };

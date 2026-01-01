@@ -1,16 +1,24 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../features/auth/hooks/useAuth';
+import SignInForm from '../../features/auth/components/SignInForm';
+import { Lock } from 'lucide-react';
 
 export default function Dashboard() {
   const { user } = useAuth();
 
-  if (!user) {
+  if (!user || user.role !== 'admin') {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-semibold mb-4">Admin Access Required</h1>
-          <p className="text-gray-600">Please sign in to access the admin dashboard.</p>
+      <div className="min-h-[calc(100vh-200px)] flex items-center justify-center px-4">
+        <div className="max-w-md w-full bg-white p-10 rounded-2xl shadow-xl shadow-gray-100 border border-gray-100 text-center">
+          <div className="w-16 h-16 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Lock className="text-amber-600" size={32} />
+          </div>
+          <h1 className="text-2xl font-bold mb-2 text-gray-900">Admin Access Required</h1>
+          <p className="text-gray-500 mb-8">Please sign in with your administrator credentials to access the dashboard.</p>
+          <div className="text-left bg-gray-50/50 p-6 rounded-xl border border-gray-50">
+            <SignInForm />
+          </div>
         </div>
       </div>
     );

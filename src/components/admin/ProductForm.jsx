@@ -19,7 +19,9 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isLoading
         status: data.status || 'draft',
         difficulty_level: data.difficulty_level || DIFFICULTY_LEVELS[0],
         yarn_weight: data.yarn_weight || YARN_WEIGHTS[0],
-        languages: data.languages && data.languages.length > 0 ? data.languages : [LANGUAGES[1]], // Default to English (index 1)
+        languages: (data.languages && data.languages.length > 0)
+            ? data.languages.map(l => l === 'Español' ? 'Spanish' : l)
+            : [LANGUAGES[1]], // Default to English (index 1)
         categories: data.categories || [],
         size_tag: data.size_tag || '',
         materials: data.materials || { yarn: '', needles: '', other: [] },

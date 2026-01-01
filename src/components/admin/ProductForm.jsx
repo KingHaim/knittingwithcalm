@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Button from '../ui/Button';
 import FileUploadManager from './FileUploadManager';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, Eye, EyeOff, Save, X as CloseIcon } from 'lucide-react';
 
 const DIFFICULTY_LEVELS = ['Beginner', 'Intermediate', 'Advanced', 'Expert'];
 const YARN_WEIGHTS = ['Lace', 'Fingering', 'Sport', 'DK', 'Worsted', 'Aran', 'Bulky', 'Super Bulky'];
@@ -106,23 +106,44 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isLoading
 
     return (
         <form onSubmit={handleSubmit} className="space-y-8 bg-white p-8 rounded-xl shadow-sm border border-gray-100">
-            <div className="flex justify-between items-center pb-4 border-bottom border-gray-100 italic">
-                <div className="flex justify-between items-center pb-4 border-b border-gray-100 italic">
-                    <div className="flex items-center gap-4">
-                        <span className="text-sm font-medium text-gray-500">Status:</span>
-                        <label className="inline-flex items-center cursor-pointer">
-                            <input
-                                type="checkbox"
-                                className="sr-only peer"
-                                checked={formData.status === 'published'}
-                                onChange={(e) => setFormData({ ...formData, status: e.target.checked ? 'published' : 'draft' })}
-                            />
-                            <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                            <span className="ms-3 text-sm font-medium text-gray-900">
-                                {formData.status === 'published' ? 'Published' : 'Draft'}
-                            </span>
-                        </label>
+            <div className="flex justify-between items-center pb-6 border-b border-gray-100">
+                <div className="flex flex-col">
+                    <span className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Visibility Status</span>
+                    <div className="flex items-center gap-3">
+                        <button
+                            type="button"
+                            onClick={() => setFormData({ ...formData, status: 'draft' })}
+                            className={`flex items-center gap-2 px-4 py-2 rounded-xl border-2 transition-all duration-300 ${formData.status === 'draft'
+                                ? 'bg-amber-50 border-amber-500 text-amber-700 shadow-sm shadow-amber-200/50 scale-105'
+                                : 'bg-white border-gray-100 text-gray-400 hover:border-amber-200 hover:text-amber-500'
+                                }`}
+                        >
+                            <EyeOff size={18} className={formData.status === 'draft' ? 'animate-pulse' : ''} />
+                            <span className="font-semibold text-sm">Draft</span>
+                        </button>
+
+                        <div className="w-8 h-[2px] bg-gray-100 rounded-full" />
+
+                        <button
+                            type="button"
+                            onClick={() => setFormData({ ...formData, status: 'published' })}
+                            className={`flex items-center gap-2 px-4 py-2 rounded-xl border-2 transition-all duration-300 ${formData.status === 'published'
+                                ? 'bg-emerald-50 border-emerald-500 text-emerald-700 shadow-sm shadow-emerald-200/50 scale-105'
+                                : 'bg-white border-gray-100 text-gray-400 hover:border-emerald-200 hover:text-emerald-500'
+                                }`}
+                        >
+                            <Eye size={18} className={formData.status === 'published' ? 'animate-bounce-subtle' : ''} />
+                            <span className="font-semibold text-sm">Published</span>
+                        </button>
                     </div>
+                </div>
+
+                <div className="hidden sm:block text-right">
+                    <p className="text-xs text-gray-400 max-w-[200px] italic">
+                        {formData.status === 'published'
+                            ? "This product will be visible to all customers in the shop."
+                            : "This product is hidden. You can keep editing until it's ready."}
+                    </p>
                 </div>
             </div>
 

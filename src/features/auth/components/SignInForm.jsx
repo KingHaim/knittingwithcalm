@@ -31,7 +31,7 @@ export default function SignInForm() {
           Email
         </label>
         <input
-          type="email"
+          type="text"
           id="email"
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}

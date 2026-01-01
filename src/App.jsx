@@ -9,6 +9,7 @@ import Bundles from './pages/Bundles';
 import Tutorials from './pages/Tutorials';
 import Blog from './pages/Blog';
 import FAQ from './pages/FAQ';
+import About from './pages/About';
 import SignIn from './pages/SignIn';
 import Dashboard from './pages/admin/Dashboard';
 import AdminPatterns from './pages/admin/Patterns';
@@ -37,6 +38,7 @@ function App() {
               <Route path="/tutorials" element={<Tutorials />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/faq" element={<FAQ />} />
+              <Route path="/about" element={<About />} />
               <Route path="/signin" element={<SignIn />} />
               <Route path="/admin" element={<Dashboard />} />
               <Route path="/admin/patterns" element={<AdminPatterns />} />

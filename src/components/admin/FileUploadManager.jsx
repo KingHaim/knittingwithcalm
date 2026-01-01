@@ -126,7 +126,7 @@ export default function FileUploadManager({
             <div key={index} className="flex items-center gap-3 bg-white border border-gray-200 p-3 rounded-lg">
               <FileText className="text-red-500" size={20} />
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{item.name || 'Archivo PDF'}</p>
+                <p className="text-sm font-medium truncate">{item.name || 'PDF File'}</p>
                 <div className="flex items-center gap-2 mt-1">
                   <span className="text-xs text-gray-500">Language:</span>
                   <select

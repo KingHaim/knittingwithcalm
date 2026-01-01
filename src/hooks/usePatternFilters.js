@@ -3,7 +3,7 @@ import { useState, useCallback } from 'react';
 const initialFilters = {
   difficulty_level: [],
   yarn_weight: [],
-  category: []
+  categories: []
 };
 
 export function usePatternFilters() {

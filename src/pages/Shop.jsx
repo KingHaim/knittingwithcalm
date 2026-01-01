@@ -36,9 +36,22 @@ export default function Shop() {
 
   const filteredPatterns = patterns?.filter((pattern) => {
     if (!pattern) return false;
-    return Object.entries(filters).every(([category, selectedValues]) => {
+
+    // Only show published patterns
+    if (pattern.status !== 'published') return false;
+
+    return Object.entries(filters).every(([key, selectedValues]) => {
       if (!selectedValues || selectedValues.length === 0) return true;
-      return selectedValues.includes(pattern[category]);
+
+      const patternValue = pattern[key];
+
+      // Handle array values (like categories)
+      if (Array.isArray(patternValue)) {
+        return selectedValues.some(val => patternValue.includes(val));
+      }
+
+      // Handle single values (like difficulty_level or yarn_weight)
+      return selectedValues.includes(patternValue);
     });
   }) || [];
 
@@ -47,7 +60,7 @@ export default function Shop() {
       <h1 className="text-4xl font-primary mb-8">Shop Patterns</h1>
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         <div className="bg-gray-50 p-4 rounded-lg">
-          <PatternFilters 
+          <PatternFilters
             filters={filters}
             filterOptions={FILTER_OPTIONS}
             onFilterChange={handleFilterChange}

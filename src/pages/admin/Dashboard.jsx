@@ -55,10 +55,13 @@ export default function Dashboard() {
 
         <Link
           to="/admin/discounts"
-          className="p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
+          className="p-8 bg-white rounded-3xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all border border-gray-50 group"
         >
-          <h2 className="text-xl font-semibold mb-2">Descuentos</h2>
-          <p className="text-gray-600">Gestionar cupones y ofertas</p>
+          <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-white transition-all">
+            <Tag size={24} />
+          </div>
+          <h2 className="text-xl font-bold mb-1 text-gray-900 tracking-tight">Coupon Engine</h2>
+          <p className="text-gray-500 text-sm">Marketing, discounts and product offers</p>
         </Link>
       </div>
     </div>

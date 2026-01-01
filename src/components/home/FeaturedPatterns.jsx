@@ -40,7 +40,7 @@ export default function FeaturedPatterns() {
           <div className="w-16 h-1 bg-primary mx-auto rounded-full opacity-30" />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
           {featuredPatterns.map(pattern => {
             const image = pattern.main_image || pattern.images?.[0] || pattern.image;
             const slug = pattern.slug || pattern.id;

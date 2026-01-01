@@ -1,10 +1,9 @@
 import { useState, useCallback } from 'react';
 
 const initialFilters = {
-  skillLevel: [],
-  age: [],
-  yarnWeight: [],
-  gender: []
+  difficulty_level: [],
+  yarn_weight: [],
+  category: []
 };
 
 export function usePatternFilters() {
@@ -16,7 +15,7 @@ export function usePatternFilters() {
       const updated = values.includes(value)
         ? values.filter(v => v !== value)
         : [...values, value];
-      
+
       return {
         ...current,
         [category]: updated

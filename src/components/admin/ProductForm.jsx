@@ -7,18 +7,19 @@ const DIFFICULTY_LEVELS = ['Principiante', 'Intermedio', 'Avanzado', 'Experto'];
 const YARN_WEIGHTS = ['Lace', 'Fingering', 'Sport', 'DK', 'Worsted', 'Aran', 'Bulky', 'Super Bulky'];
 const LANGUAGES = ['Español', 'English', 'Français', 'Deutsch', 'Italiano'];
 
-export default function ProductForm({ initialData = {}, onSubmit, onCancel, isLoading }) {
+export default function ProductForm({ initialData, onSubmit, onCancel, isLoading }) {
+    const data = initialData || {};
     const [formData, setFormData] = useState({
-        title: initialData.title || '',
-        description: initialData.description || '',
-        price: initialData.price || '',
-        difficulty_level: initialData.difficulty_level || DIFFICULTY_LEVELS[0],
-        yarn_weight: initialData.yarn_weight || YARN_WEIGHTS[0],
-        languages: initialData.languages || [LANGUAGES[0]],
-        materials: initialData.materials || { yarn: '', needles: '', other: [] },
-        video_url: initialData.video_url || '',
-        category: initialData.category || 'Patterns',
-        ...initialData
+        title: data.title || '',
+        description: data.description || '',
+        price: data.price || '',
+        difficulty_level: data.difficulty_level || DIFFICULTY_LEVELS[0],
+        yarn_weight: data.yarn_weight || YARN_WEIGHTS[0],
+        languages: data.languages || [LANGUAGES[0]],
+        materials: data.materials || { yarn: '', needles: '', other: [] },
+        video_url: data.video_url || '',
+        category: data.category || 'Patterns',
+        ...data
     });
 
     const [images, setImages] = useState([]);
@@ -152,8 +153,8 @@ export default function ProductForm({ initialData = {}, onSubmit, onCancel, isLo
                                     type="button"
                                     onClick={() => handleLanguageToggle(lang)}
                                     className={`px-3 py-1 rounded-full text-sm transition-colors ${formData.languages.includes(lang)
-                                            ? 'bg-primary text-white border-primary'
-                                            : 'bg-gray-50 text-gray-600 border border-gray-200 hover:border-primary'
+                                        ? 'bg-primary text-white border-primary'
+                                        : 'bg-gray-50 text-gray-600 border border-gray-200 hover:border-primary'
                                         }`}
                                 >
                                     {lang}

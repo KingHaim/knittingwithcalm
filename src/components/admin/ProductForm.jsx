@@ -6,6 +6,7 @@ import { Plus, Trash2 } from 'lucide-react';
 const DIFFICULTY_LEVELS = ['Principiante', 'Intermedio', 'Avanzado', 'Experto'];
 const YARN_WEIGHTS = ['Lace', 'Fingering', 'Sport', 'DK', 'Worsted', 'Aran', 'Bulky', 'Super Bulky'];
 const CATEGORIES = ['Bebe', 'Infantil', 'Mujer', 'Hombre', 'Accesorios'];
+const LANGUAGES = ['Español', 'English', 'Français', 'Deutsch', 'Italiano'];
 
 export default function ProductForm({ initialData, onSubmit, onCancel, isLoading }) {
     const data = initialData || {};

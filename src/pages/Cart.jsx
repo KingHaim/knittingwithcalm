@@ -8,7 +8,7 @@ import emailjs from '@emailjs/browser';
 export default function Cart() {
   const { items, removeItem, clearCart } = useCart();
   const navigate = useNavigate();
-  
+
   const total = items.reduce((sum, item) => sum + Number(item.price), 0);
 
   const createOrder = (data, actions) => {
@@ -51,18 +51,22 @@ export default function Cart() {
         'template_fdwy6o6',
         {
           to_email: buyerEmail,
-          // If multiple items, join their names with commas
           pattern_names: items.map(item => item.title).join(', '),
-          // Generate download links for each pattern
-          download_links: items.map(item => item.downloadUrl).join('\n'),
+          // Generate download links for all available PDFs of each pattern
+          download_links: items.map(item => {
+            if (item.pdf_files && item.pdf_files.length > 0) {
+              return item.pdf_files.map(p => `${item.title} (${p.language}): ${p.url}`).join('\n');
+            }
+            return `${item.title}: ${item.pdf_url || 'No link available'}`;
+          }).join('\n\n'),
           order_id: order.id
         },
         '1przYY0tg7DiXXvf7'
       );
 
       clearCart();
-      navigate('/thank-you', { 
-        state: { 
+      navigate('/thank-you', {
+        state: {
           buyerEmail,
           patterns: items
         }
@@ -89,7 +93,7 @@ export default function Cart() {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-4xl font-primary mb-8">Shopping Cart</h1>
-      
+
       <div className="space-y-4">
         {items.map(item => (
           <div key={item.id} className="flex justify-between items-center p-4 bg-white rounded-lg shadow">
@@ -112,7 +116,7 @@ export default function Cart() {
           <span className="font-medium">Total:</span>
           <span className="font-medium">${total.toFixed(2)}</span>
         </div>
-        
+
         <PayPalButtons
           createOrder={createOrder}
           onApprove={onApprove}

@@ -169,13 +169,27 @@ export default function AdminPatterns() {
                           >
                             <Trash2 size={18} />
                           </button>
-                          {pattern.pdf_url && (
+                          {pattern.pdf_files && pattern.pdf_files.length > 0 ? (
+                            pattern.pdf_files.map((pdf, idx) => (
+                              <a
+                                key={idx}
+                                href={pdf.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="p-2 text-gray-400 hover:text-primary transition-colors flex flex-col items-center"
+                                title={`Ver PDF (${pdf.language})`}
+                              >
+                                <ExternalLink size={14} />
+                                <span className="text-[8px] font-bold uppercase">{pdf.language.substring(0, 2)}</span>
+                              </a>
+                            ))
+                          ) : pattern.pdf_url && (
                             <a
                               href={pattern.pdf_url}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="p-2 text-gray-400 hover:text-green-500 transition-colors"
-                              title="Ver PDF"
+                              title="Ver PDF (Legacy)"
                             >
                               <ExternalLink size={18} />
                             </a>

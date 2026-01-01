@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../features/auth/hooks/useAuth';
 import SignInForm from '../../features/auth/components/SignInForm';
-import { Lock } from 'lucide-react';
+import { Lock, Tag } from 'lucide-react';
 
 export default function Dashboard() {
   const { user } = useAuth();

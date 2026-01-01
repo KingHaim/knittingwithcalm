@@ -19,7 +19,7 @@ export default function Dashboard() {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-primary mb-8">Admin Dashboard</h1>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Link
           to="/admin/patterns"
@@ -43,6 +43,14 @@ export default function Dashboard() {
         >
           <h2 className="text-xl font-semibold mb-2">Tutorials</h2>
           <p className="text-gray-600">Manage video tutorials</p>
+        </Link>
+
+        <Link
+          to="/admin/discounts"
+          className="p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
+        >
+          <h2 className="text-xl font-semibold mb-2">Descuentos</h2>
+          <p className="text-gray-600">Gestionar cupones y ofertas</p>
         </Link>
       </div>
     </div>

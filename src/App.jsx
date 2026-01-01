@@ -15,6 +15,7 @@ import Dashboard from './pages/admin/Dashboard';
 import AdminPatterns from './pages/admin/Patterns';
 import AdminBundles from './pages/admin/Bundles';
 import AdminTutorials from './pages/admin/Tutorials';
+import AdminDiscounts from './pages/admin/Discounts';
 import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 import { PAYPAL_CLIENT_ID } from './config/paypal';
 import Success from './pages/Success';
@@ -42,6 +43,7 @@ function App() {
               <Route path="/admin/patterns" element={<AdminPatterns />} />
               <Route path="/admin/bundles" element={<AdminBundles />} />
               <Route path="/admin/tutorials" element={<AdminTutorials />} />
+              <Route path="/admin/discounts" element={<AdminDiscounts />} />
               <Route path="/success" element={<Success />} />
               <Route path="/thank-you" element={<ThankYou />} />
             </Routes>

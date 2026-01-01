@@ -25,14 +25,14 @@ export default function SignInForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4" noValidate>
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-          Email
+        <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+          Usuario / Email
         </label>
         <input
           type="text"
-          id="email"
+          id="username"
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"

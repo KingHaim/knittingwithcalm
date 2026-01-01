@@ -43,11 +43,11 @@ export const patternService = {
             );
 
             // 2. Map Main Image (if it was a file, find its new URL)
-            let finalMainImage = mainImage;
-            if (mainImage instanceof File || (mainImage && mainImage.preview)) {
+            let finalMainImage = main_image;
+            if (main_image instanceof File || (main_image && main_image.preview)) {
                 // Find matching file in original images to get the index, then use corresponding uploaded URL
                 const index = images.findIndex(img =>
-                    (img.preview === mainImage.preview) || (img === mainImage)
+                    (img.preview === main_image.preview) || (img === main_image)
                 );
                 if (index !== -1) {
                     finalMainImage = uploadedImageUrls[index];

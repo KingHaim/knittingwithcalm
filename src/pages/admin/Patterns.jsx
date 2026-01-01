@@ -48,7 +48,7 @@ export default function AdminPatterns() {
   const handleDelete = async (pattern) => {
     if (window.confirm('¿Are you sure you want to delete this pattern?')) {
       try {
-        await patternService.deletePattern(pattern.id);
+        await patternService.deletePattern(pattern.id, pattern.pdf_url, pattern.images);
         fetchPatterns();
       } catch (err) {
         setError('Error deleting pattern');

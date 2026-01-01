@@ -84,12 +84,30 @@ export const patternService = {
      * Deletes a pattern and its associated files
      */
     async deletePattern(id, pdfUrl, imageUrls) {
-        // Delete files logic would go here (optional but recommended for cleanup)
-        const { error } = await supabase
+        // 1. Delete record from database
+        const { error: dbError } = await supabase
             .from('patterns')
             .delete()
             .eq('id', id);
 
-        if (error) throw error;
+        if (dbError) throw dbError;
+
+        // 2. Cleanup Storage (Best effort, don't fail if files are already gone)
+        try {
+            // Cleanup PDF
+            if (pdfUrl) {
+                const pdfPath = pdfUrl.split('/').pop();
+                await supabase.storage.from('patterns-pdf').remove([pdfPath]);
+            }
+
+            // Cleanup Images
+            if (imageUrls && imageUrls.length > 0) {
+                const imagePaths = imageUrls.map(url => url.split('/').pop());
+                await supabase.storage.from('patterns-images').remove(imagePaths);
+            }
+        } catch (storageError) {
+            console.warn('Failed to cleanup storage files:', storageError);
+            // We don't throw here to ensure the UI thinks deletion was successful if DB record is gone
+        }
     }
 };

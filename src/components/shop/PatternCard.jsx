@@ -11,7 +11,9 @@ export default function PatternCard({ pattern }) {
 
   if (!pattern) return null;
 
-  const { title, price, category, yarnWeight, image } = pattern;
+  const { title, price, category, yarn_weight, images } = pattern;
+  const image = images?.[0] || '';
+  const yarnWeight = yarn_weight;
 
   const handleCartAction = () => {
     if (isInCart) {

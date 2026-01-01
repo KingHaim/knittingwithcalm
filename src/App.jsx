@@ -20,6 +20,7 @@ import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 import { PAYPAL_CLIENT_ID } from './config/paypal';
 import Success from './pages/Success';
 import ThankYou from './pages/ThankYou';
+import PatternPage from './pages/shop/PatternPage';
 
 const queryClient = new QueryClient();
 

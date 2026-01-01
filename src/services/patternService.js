@@ -41,15 +41,21 @@ export const patternService = {
                 images.map(image => this.uploadFile(image, 'patterns-images'))
             );
 
-            // 3. Save pattern to database
+            // 3. Clean up data and map fields
+            const { images: _, pdf: __, ...cleanedData } = patternData;
+
+            const payload = {
+                ...cleanedData,
+                skill_level: cleanedData.difficulty_level || 'Principiante',
+                pdf_url: pdfUrl,
+                images: imageUrls,
+                updated_at: new Date()
+            };
+
+            // 4. Save pattern to database
             const { data, error } = await supabase
                 .from('patterns')
-                .insert([{
-                    ...patternData,
-                    pdf_url: pdfUrl,
-                    images: imageUrls,
-                    updated_at: new Date()
-                }])
+                .insert([payload])
                 .select()
                 .single();
 

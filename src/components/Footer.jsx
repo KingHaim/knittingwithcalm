@@ -7,11 +7,11 @@ export default function Footer() {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-          <img 
-                src="/images/logo.png" 
-                alt="Knitting Patterns Logo" 
-                className="h-16 w-auto"
-              />
+            <img
+              src="/images/logo.png"
+              alt="Knitting Patterns Logo"
+              className="h-16 w-auto"
+            />
             <p className="text-gray-600">
               Modern knitting patterns for contemporary crafters.
             </p>
@@ -44,8 +44,11 @@ export default function Footer() {
             </ul>
           </div>
         </div>
-        <div className="mt-8 pt-8 border-t text-center text-gray-500">
+        <div className="mt-8 pt-8 border-t flex flex-col md:flex-row justify-between items-center text-gray-500 text-sm">
           <p>&copy; {new Date().getFullYear()} Knitting Patterns. All rights reserved.</p>
+          <Link to="/signin" className="mt-2 md:mt-0 opacity-30 hover:opacity-100 transition-opacity">
+            Admin Login
+          </Link>
         </div>
       </div>
     </footer>

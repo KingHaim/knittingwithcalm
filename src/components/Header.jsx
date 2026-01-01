@@ -12,13 +12,13 @@ export default function Header() {
       <div className="container mx-auto px-4 py-4">
         <nav className="flex items-center justify-between">
           <Link to="/" className="font-primary">
-            <img 
-              src="/images/logo.png" 
-              alt="Knitting Patterns Logo" 
+            <img
+              src="/images/logo.png"
+              alt="Knitting Patterns Logo"
               className="h-12 w-auto"
             />
           </Link>
-          
+
           <div className="hidden md:flex space-x-6">
             <Link to="/shop" className="text-gray-700 hover:text-gray-900">
               Shop
@@ -31,30 +31,25 @@ export default function Header() {
             </Link>
           </div>
 
-          <div className="flex items-center space-x-4">
-            <Link to="/cart" className="text-gray-700 hover:text-gray-900">
-              Cart ({cartCount})
+          <div className="flex items-center space-x-6">
+            <Link to="/cart" className="text-gray-700 hover:text-gray-900 flex items-center gap-2">
+              <span className="font-medium">Cart</span>
+              <span className="bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                {cartCount}
+              </span>
             </Link>
-            {user ? (
-              <div className="flex items-center space-x-4">
-                <Link to="/account" className="text-gray-700 hover:text-gray-900">
-                  Account
+
+            {user?.role === 'admin' && (
+              <div className="flex items-center space-x-4 border-l pl-4 border-gray-100">
+                <Link to="/admin" className="text-sm font-semibold text-gray-500 hover:text-primary transition-colors">
+                  Admin
                 </Link>
                 <button
                   onClick={signOut}
-                  className="text-gray-700 hover:text-gray-900"
+                  className="text-sm font-semibold text-gray-400 hover:text-red-500 transition-colors"
                 >
                   Sign Out
                 </button>
-              </div>
-            ) : (
-              <div className="flex items-center space-x-4">
-                <Link to="/signup" className="text-gray-700 hover:text-gray-900">
-                  Sign Up
-                </Link>
-                <Link to="/signin" className="text-gray-700 hover:text-gray-900">
-                  Sign In
-                </Link>
               </div>
             )}
           </div>

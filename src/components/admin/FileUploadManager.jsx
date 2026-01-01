@@ -75,7 +75,7 @@ export default function FileUploadManager({
       onPdfsChange(updated);
       setError('');
     } else {
-      setError('Por favor, sube un archivo PDF válido.');
+      setError('Please upload a valid PDF file.');
     }
   }, [pdfs, selectedLanguages, onPdfsChange]);
 
@@ -107,7 +107,7 @@ export default function FileUploadManager({
     <div className="space-y-8">
       {/* PDF Upload Section */}
       <div className="space-y-4">
-        <label className="block text-sm font-semibold text-gray-700">Archivos PDF del Patrón</label>
+        <label className="block text-sm font-semibold text-gray-700">Pattern PDF Files</label>
 
         <div
           {...getPdfProps()}
@@ -116,7 +116,7 @@ export default function FileUploadManager({
           <input {...getPdfInputProps()} />
           <div className="flex flex-col items-center">
             <Upload className="text-primary mb-2" size={24} />
-            <p className="text-sm text-gray-600">Sube aquí los PDFs (uno por idioma)</p>
+            <p className="text-sm text-gray-600">Upload PDFs here (one per language)</p>
           </div>
         </div>
 
@@ -128,13 +128,13 @@ export default function FileUploadManager({
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate">{item.name || 'Archivo PDF'}</p>
                 <div className="flex items-center gap-2 mt-1">
-                  <span className="text-xs text-gray-500">Idioma:</span>
+                  <span className="text-xs text-gray-500">Language:</span>
                   <select
                     value={item.language}
                     onChange={(e) => updatePdfLanguage(index, e.target.value)}
                     className="text-xs border-none bg-gray-100 rounded px-2 py-1 outline-none focus:ring-1 focus:ring-primary"
                   >
-                    <option value="">Seleccionar idioma...</option>
+                    <option value="">Select language...</option>
                     {selectedLanguages.map(lang => (
                       <option key={lang} value={lang}>{lang}</option>
                     ))}
@@ -155,21 +155,21 @@ export default function FileUploadManager({
         {/* Warnings for missing PDFs */}
         {selectedLanguages.filter(lang => !pdfs.find(p => p.language === lang)).map(lang => (
           <div key={lang} className="text-[10px] text-amber-600 flex items-center gap-1 bg-amber-50 px-2 py-1 rounded">
-            Falta PDF para: <strong>{lang}</strong>
+            Missing PDF for: <strong>{lang}</strong>
           </div>
         ))}
       </div>
 
       {/* Image Upload Section */}
       <div className="space-y-4">
-        <label className="block text-sm font-semibold text-gray-700">Imágenes del Producto</label>
+        <label className="block text-sm font-semibold text-gray-700">Product Images</label>
         <div
           {...getImageProps()}
           className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center cursor-pointer hover:border-primary transition-colors bg-gray-50/50"
         >
           <input {...getImageInputProps()} />
           <Upload className="text-primary mx-auto mb-2" size={24} />
-          <p className="text-sm text-gray-600">Sube las fotos aquí</p>
+          <p className="text-sm text-gray-600">Upload photos here</p>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
@@ -189,7 +189,7 @@ export default function FileUploadManager({
                     onClick={() => setAsMain(index)}
                     className="w-full py-1.5 bg-white text-xs font-semibold text-gray-700 rounded-lg hover:bg-primary hover:text-white transition-colors"
                   >
-                    {isMain ? 'Es Portada' : 'Poner Portada'}
+                    {isMain ? 'Selected Cover' : 'Set as Cover'}
                   </button>
                   <button
                     type="button"
@@ -201,7 +201,7 @@ export default function FileUploadManager({
                 </div>
                 {isMain && (
                   <div className="absolute top-2 left-2 bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg">
-                    PORTADA
+                    COVER
                   </div>
                 )}
               </div>

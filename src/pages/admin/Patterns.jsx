@@ -22,7 +22,7 @@ export default function AdminPatterns() {
       const data = await patternService.getPatterns();
       setPatterns(data);
     } catch (err) {
-      setError(`Error al cargar patrones: ${err.message || 'Error desconocido'}`);
+      setError(`Error loading patterns: ${err.message || 'Unknown error'}`);
       console.error('Supabase Error:', err);
     }
   };
@@ -40,7 +40,7 @@ export default function AdminPatterns() {
       setEditingPattern(null);
       fetchPatterns();
     } catch (err) {
-      setError(`Error al guardar: ${err.message}`);
+      setError(`Error saving: ${err.message}`);
     } finally {
       setIsLoading(false);
     }
@@ -72,12 +72,12 @@ export default function AdminPatterns() {
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-primary">Administrar Patrones</h1>
-          <p className="text-gray-600">Sube y gestiona tus productos del shop</p>
+          <h1 className="text-3xl font-primary">Manage Patterns</h1>
+          <p className="text-gray-600">Upload and manage your shop products</p>
         </div>
         {!showForm && (
           <Button onClick={() => setShowForm(true)} className="flex items-center gap-2">
-            <Plus size={20} /> Nuevo Patrón
+            <Plus size={20} /> New Pattern
           </Button>
         )}
       </div>
@@ -92,7 +92,7 @@ export default function AdminPatterns() {
         <div className="animate-in fade-in slide-in-from-top-4 duration-300">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">
-              {editingPattern ? 'Editar Patrón' : 'Añadir Nuevo Patrón'}
+              {editingPattern ? 'Edit Pattern' : 'Add New Pattern'}
             </h2>
           </div>
           <ProductForm
@@ -106,9 +106,9 @@ export default function AdminPatterns() {
         <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
           {patterns.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-gray-600 mb-4">No hay patrones añadidos todavía</p>
+              <p className="text-gray-600 mb-4">No patterns added yet</p>
               <Button onClick={() => setShowForm(true)} variant="secondary">
-                Añadir tu primer patrón
+                Add your first pattern
               </Button>
             </div>
           ) : (
@@ -116,10 +116,10 @@ export default function AdminPatterns() {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-gray-50 border-bottom border-gray-100">
-                    <th className="px-6 py-4 font-semibold text-gray-700">Producto</th>
-                    <th className="px-6 py-4 font-semibold text-gray-700">Nivel</th>
-                    <th className="px-6 py-4 font-semibold text-gray-700">Precio</th>
-                    <th className="px-6 py-4 font-semibold text-gray-700">Acciones</th>
+                    <th className="px-6 py-4 font-semibold text-gray-700">Product</th>
+                    <th className="px-6 py-4 font-semibold text-gray-700">Level</th>
+                    <th className="px-6 py-4 font-semibold text-gray-700">Price</th>
+                    <th className="px-6 py-4 font-semibold text-gray-700">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
@@ -135,7 +135,7 @@ export default function AdminPatterns() {
                             />
                             {pattern.status === 'draft' && (
                               <span className="absolute -top-1 -left-1 bg-amber-100 text-amber-700 text-[8px] font-bold px-1 rounded border border-amber-200">
-                                BORRADOR
+                                DRAFT
                               </span>
                             )}
                           </div>
@@ -157,14 +157,14 @@ export default function AdminPatterns() {
                         <div className="flex items-center gap-2">
                           <button
                             className="p-2 text-gray-400 hover:text-primary transition-colors"
-                            title="Editar"
+                            title="Edit"
                             onClick={() => { setEditingPattern(pattern); setShowForm(true); }}
                           >
                             <Edit2 size={18} />
                           </button>
                           <button
                             className="p-2 text-gray-400 hover:text-red-500 transition-colors"
-                            title="Eliminar"
+                            title="Delete"
                             onClick={() => handleDelete(pattern)}
                           >
                             <Trash2 size={18} />
@@ -177,7 +177,7 @@ export default function AdminPatterns() {
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="p-2 text-gray-400 hover:text-primary transition-colors flex flex-col items-center"
-                                title={`Ver PDF (${pdf.language})`}
+                                title={`View PDF (${pdf.language})`}
                               >
                                 <ExternalLink size={14} />
                                 <span className="text-[8px] font-bold uppercase">{pdf.language.substring(0, 2)}</span>
@@ -189,7 +189,7 @@ export default function AdminPatterns() {
                               target="_blank"
                               rel="noopener noreferrer"
                               className="p-2 text-gray-400 hover:text-green-500 transition-colors"
-                              title="Ver PDF (Legacy)"
+                              title="View PDF (Legacy)"
                             >
                               <ExternalLink size={18} />
                             </a>

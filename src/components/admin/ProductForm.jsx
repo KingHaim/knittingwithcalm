@@ -3,10 +3,10 @@ import Button from '../ui/Button';
 import FileUploadManager from './FileUploadManager';
 import { Plus, Trash2 } from 'lucide-react';
 
-const DIFFICULTY_LEVELS = ['Principiante', 'Intermedio', 'Avanzado', 'Experto'];
+const DIFFICULTY_LEVELS = ['Beginner', 'Intermediate', 'Advanced', 'Expert'];
 const YARN_WEIGHTS = ['Lace', 'Fingering', 'Sport', 'DK', 'Worsted', 'Aran', 'Bulky', 'Super Bulky'];
-const CATEGORIES = ['Bebe', 'Infantil', 'Mujer', 'Hombre', 'Accesorios'];
-const LANGUAGES = ['Español', 'English', 'Français', 'Deutsch', 'Italiano'];
+const CATEGORIES = ['Baby', 'Kids', 'Women', 'Men', 'Accessories'];
+const LANGUAGES = ['Spanish', 'English', 'French', 'German', 'Italian'];
 
 export default function ProductForm({ initialData, onSubmit, onCancel, isLoading }) {
     const data = initialData || {};
@@ -19,7 +19,7 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isLoading
         status: data.status || 'draft',
         difficulty_level: data.difficulty_level || DIFFICULTY_LEVELS[0],
         yarn_weight: data.yarn_weight || YARN_WEIGHTS[0],
-        languages: data.languages || [LANGUAGES[0]],
+        languages: data.languages || [LANGUAGES[1]], // Default to English (index 1)
         categories: data.categories || [],
         size_tag: data.size_tag || '',
         materials: data.materials || { yarn: '', needles: '', other: [] },
@@ -107,20 +107,22 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isLoading
     return (
         <form onSubmit={handleSubmit} className="space-y-8 bg-white p-8 rounded-xl shadow-sm border border-gray-100">
             <div className="flex justify-between items-center pb-4 border-bottom border-gray-100 italic">
-                <div className="flex items-center gap-4">
-                    <span className="text-sm font-medium text-gray-500">Estado:</span>
-                    <label className="inline-flex items-center cursor-pointer">
-                        <input
-                            type="checkbox"
-                            className="sr-only peer"
-                            checked={formData.status === 'published'}
-                            onChange={(e) => setFormData({ ...formData, status: e.target.checked ? 'published' : 'draft' })}
-                        />
-                        <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                        <span className="ms-3 text-sm font-medium text-gray-900">
-                            {formData.status === 'published' ? 'Publicado' : 'Borrador'}
-                        </span>
-                    </label>
+                <div className="flex justify-between items-center pb-4 border-b border-gray-100 italic">
+                    <div className="flex items-center gap-4">
+                        <span className="text-sm font-medium text-gray-500">Status:</span>
+                        <label className="inline-flex items-center cursor-pointer">
+                            <input
+                                type="checkbox"
+                                className="sr-only peer"
+                                checked={formData.status === 'published'}
+                                onChange={(e) => setFormData({ ...formData, status: e.target.checked ? 'published' : 'draft' })}
+                            />
+                            <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                            <span className="ms-3 text-sm font-medium text-gray-900">
+                                {formData.status === 'published' ? 'Published' : 'Draft'}
+                            </span>
+                        </label>
+                    </div>
                 </div>
             </div>
 
@@ -129,13 +131,13 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isLoading
                 <div className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-2">Título del Producto</label>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Product Title</label>
                             <input
                                 type="text"
                                 name="title"
                                 value={formData.title}
                                 onChange={handleChange}
-                                placeholder="Ej: Cardigan Serena"
+                                placeholder="e.g.: Luxury Knit Snood"
                                 className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                                 required
                             />
@@ -147,7 +149,7 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isLoading
                                 name="slug"
                                 value={formData.slug}
                                 onChange={handleChange}
-                                placeholder="cardigan-serena"
+                                placeholder="luxury-knit-snood"
                                 className="w-full px-4 py-2 rounded-lg border border-gray-100 bg-gray-50 text-gray-600 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                                 required
                             />
@@ -155,7 +157,7 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isLoading
                     </div>
 
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">Descripción</label>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Description</label>
                         <textarea
                             name="description"
                             value={formData.description}
@@ -168,7 +170,7 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isLoading
 
                     <div className="grid grid-cols-3 gap-4">
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-2">Precio (€)</label>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Price (€)</label>
                             <input
                                 type="number"
                                 name="price"
@@ -180,25 +182,25 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isLoading
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-2">Precio Anterior</label>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Previous Price</label>
                             <input
                                 type="number"
                                 name="previous_price"
                                 value={formData.previous_price}
                                 onChange={handleChange}
                                 step="0.01"
-                                placeholder="Ej: 10.00"
+                                placeholder="e.g.: 10.00"
                                 className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-2">Talla / Tag</label>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Size / Tag</label>
                             <input
                                 type="text"
                                 name="size_tag"
                                 value={formData.size_tag}
                                 onChange={handleChange}
-                                placeholder="S-M-L o Única"
+                                placeholder="S-M-L or One Size"
                                 className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                             />
                         </div>
@@ -206,7 +208,7 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isLoading
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-2">Nivel de Dificultad</label>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Difficulty Level</label>
                             <select
                                 name="difficulty_level"
                                 value={formData.difficulty_level}
@@ -219,7 +221,7 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isLoading
                             </select>
                         </div>
                         <div>
-                            <label className="block text-sm font-semibold text-gray-700 mb-2">Grosor de Lana</label>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Yarn Weight</label>
                             <select
                                 name="yarn_weight"
                                 value={formData.yarn_weight}
@@ -234,7 +236,7 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isLoading
                     </div>
 
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">Sección / Categorías</label>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Section / Categories</label>
                         <div className="flex flex-wrap gap-2">
                             {CATEGORIES.map(cat => (
                                 <button
@@ -253,8 +255,8 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isLoading
                     </div>
 
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">Idiomas Seleccionados</label>
-                        <p className="text-xs text-gray-500 mb-2">Selecciona los idiomas para habilitar la subida de sus correspondientes PDFs.</p>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Selected Languages</label>
+                        <p className="text-xs text-gray-500 mb-2">Select the languages to enable uploading their corresponding PDFs.</p>
                         <div className="flex flex-wrap gap-2">
                             {LANGUAGES.map(lang => (
                                 <button
@@ -286,30 +288,30 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isLoading
                     />
 
                     <div className="space-y-4">
-                        <h3 className="text-sm font-semibold text-gray-700">Materiales Necesarios</h3>
+                        <h3 className="text-sm font-semibold text-gray-700">Required Materials</h3>
                         <div>
-                            <label className="block text-xs text-gray-500 mb-1">Lana Sugerida</label>
+                            <label className="block text-xs text-gray-500 mb-1">Suggested Yarn</label>
                             <input
                                 type="text"
                                 name="materials_yarn"
                                 value={formData.materials.yarn}
                                 onChange={(e) => handleMaterialChange('yarn', e.target.value)}
-                                placeholder="Ej: 3 ovillos de Lana Merino"
+                                placeholder="e.g.: 3 hanks of Merino Wool"
                                 className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                             />
                         </div>
                         <div>
-                            <label className="block text-xs text-gray-500 mb-1">Agujas</label>
+                            <label className="block text-xs text-gray-500 mb-1">Needles</label>
                             <input
                                 type="text"
                                 value={formData.materials.needles}
                                 onChange={(e) => handleMaterialChange('needles', e.target.value)}
-                                placeholder="Ej: Agujas circulares 4.5mm"
+                                placeholder="e.g.: 4.5mm circular needles"
                                 className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="block text-xs text-gray-500">Otros Materiales</label>
+                            <label className="block text-xs text-gray-500">Other Materials</label>
                             {formData.materials.other.map((item, index) => (
                                 <div key={index} className="flex gap-2">
                                     <input
@@ -332,13 +334,13 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isLoading
                                 onClick={addOtherMaterial}
                                 className="flex items-center text-primary text-sm font-medium hover:underline"
                             >
-                                <Plus size={16} className="mr-1" /> Añadir otro material
+                                <Plus size={16} className="mr-1" /> Add another material
                             </button>
                         </div>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">Link de Video (Opcional)</label>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Video Link (Optional)</label>
                         <input
                             type="url"
                             name="video_url"
@@ -353,10 +355,10 @@ export default function ProductForm({ initialData, onSubmit, onCancel, isLoading
 
             <div className="flex justify-end space-x-4 pt-6 border-t border-gray-100">
                 <Button variant="secondary" onClick={onCancel} type="button">
-                    Cancelar
+                    Cancel
                 </Button>
                 <Button type="submit" disabled={isLoading}>
-                    {isLoading ? 'Guardando...' : 'Guardar Producto'}
+                    {isLoading ? 'Saving...' : 'Save Product'}
                 </Button>
             </div>
         </form>

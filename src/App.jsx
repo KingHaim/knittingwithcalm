@@ -44,6 +44,7 @@ function App() {
               <Route path="/admin/bundles" element={<AdminBundles />} />
               <Route path="/admin/tutorials" element={<AdminTutorials />} />
               <Route path="/admin/discounts" element={<AdminDiscounts />} />
+              <Route path="/shop/:slug" element={<PatternPage />} />
               <Route path="/success" element={<Success />} />
               <Route path="/thank-you" element={<ThankYou />} />
             </Routes>

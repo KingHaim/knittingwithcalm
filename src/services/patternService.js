@@ -111,6 +111,20 @@ export const patternService = {
     },
 
     /**
+     * Fetches a single pattern by slug
+     */
+    async getPatternBySlug(slug) {
+        const { data, error } = await supabase
+            .from('patterns')
+            .select('*')
+            .eq('slug', slug)
+            .single();
+
+        if (error) throw error;
+        return data;
+    },
+
+    /**
      * Deletes a pattern and its associated files
      */
     async deletePattern(id, pdfUrl, imageUrls, pdfFiles = []) {

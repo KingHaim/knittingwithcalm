@@ -54,6 +54,14 @@ export default function Dashboard() {
         </Link>
 
         <Link
+          to="/admin/blog"
+          className="p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
+        >
+          <h2 className="text-xl font-semibold mb-2">Blog</h2>
+          <p className="text-gray-600">Add and edit blog posts</p>
+        </Link>
+
+        <Link
           to="/admin/discounts"
           className="p-8 bg-white rounded-3xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all border border-gray-50 group"
         >

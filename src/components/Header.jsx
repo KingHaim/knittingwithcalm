@@ -33,10 +33,12 @@ export default function Header() {
 
           <div className="flex items-center space-x-6">
             <Link to="/cart" className="text-gray-700 hover:text-gray-900 flex items-center gap-2">
-              <span className="font-medium">Cart</span>
-              <span className="bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                {cartCount}
-              </span>
+              <span className="font-medium">Cart{cartCount > 0 ? ` (${cartCount})` : ''}</span>
+              {cartCount > 0 && (
+                <span className="bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                  {cartCount}
+                </span>
+              )}
             </Link>
 
             {user?.role === 'admin' && (

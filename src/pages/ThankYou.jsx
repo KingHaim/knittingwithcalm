@@ -1,8 +1,93 @@
-import { useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useLocation, useSearchParams } from 'react-router-dom';
+import emailjs from '@emailjs/browser';
+import { useCart } from '../stores/cartStore';
+
+const EMAILJS_SERVICE = 'service_8k4945f';
+const EMAILJS_TEMPLATE = 'template_fdwy6o6';
+const EMAILJS_PUBLIC_KEY = '1przYY0tg7DiXXvf7';
 
 export function ThankYou() {
   const location = useLocation();
-  const { buyerEmail, patterns = [] } = location.state || {};
+  const [searchParams] = useSearchParams();
+  const { clearCart } = useCart();
+  const sessionId = searchParams.get('session_id');
+
+  const [buyerEmail, setBuyerEmail] = useState(location.state?.buyerEmail);
+  const [patterns, setPatterns] = useState(location.state?.patterns ?? []);
+  const [loading, setLoading] = useState(!!sessionId);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (!sessionId) return;
+
+    let cancelled = false;
+
+    async function fulfill() {
+      try {
+        const res = await fetch(`/api/fulfill-order?session_id=${encodeURIComponent(sessionId)}`);
+        const data = await res.json();
+        if (cancelled) return;
+        if (!res.ok) {
+          setError(data.error || 'Could not load order');
+          return;
+        }
+        const { email, items } = data;
+        setBuyerEmail(email);
+        setPatterns(items || []);
+
+        if (email && items?.length) {
+          await emailjs.send(
+            EMAILJS_SERVICE,
+            EMAILJS_TEMPLATE,
+            {
+              to_email: email,
+              pattern_names: items.map((i) => i.title).join(', '),
+              download_links: items
+                .map((item) => {
+                  if (item.pdf_files?.length) {
+                    return item.pdf_files.map((p) => `${item.title} (${p.language}): ${p.url}`).join('\n');
+                  }
+                  return `${item.title}: ${item.pdf_url || 'No link available'}`;
+                })
+                .join('\n\n'),
+              order_id: sessionId,
+            },
+            EMAILJS_PUBLIC_KEY
+          );
+        }
+        clearCart();
+      } catch (err) {
+        if (!cancelled) setError(err.message || 'Something went wrong');
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    fulfill();
+    return () => { cancelled = true; };
+  }, [sessionId, clearCart]);
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-md mx-auto text-center">
+          <p className="text-gray-600">Loading your order…</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-md mx-auto text-center">
+          <p className="text-red-600 mb-4">{error}</p>
+          <a href="/cart" className="text-indigo-600 hover:underline">Back to cart</a>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">

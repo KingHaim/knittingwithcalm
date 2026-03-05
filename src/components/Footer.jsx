@@ -40,7 +40,16 @@ export default function Footer() {
             <h3 className="font-primary text-lg mb-4">Contact</h3>
             <ul className="space-y-2 text-gray-600">
               <li>Email: hello@knittingpatterns.com</li>
-              <li>Follow us on Instagram</li>
+              <li>
+                <a
+                  href="https://instagram.com/knittingwithcalm"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-600 hover:text-indigo-600"
+                >
+                  Follow us on Instagram @knittingwithcalm
+                </a>
+              </li>
             </ul>
           </div>
         </div>

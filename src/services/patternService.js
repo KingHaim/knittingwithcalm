@@ -71,6 +71,8 @@ export const patternService = {
             // 5. Build Final Payload
             const payload = {
                 ...patternData,
+                price: patternData.price === '' ? null : Number(patternData.price),
+                previous_price: patternData.previous_price === '' ? null : Number(patternData.previous_price),
                 skill_level: patternData.difficulty_level || 'Principiante',
                 images: uploadedImageUrls,
                 main_image: finalMainImage || uploadedImageUrls[0],

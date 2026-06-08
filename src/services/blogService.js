@@ -1,6 +1,59 @@
 import { supabase } from '../config/supabase';
+import { fileToDataUrl } from '../utils/compressImage';
 
 const TABLE = 'blog_posts';
+const IMAGE_BUCKETS = ['blog-images', 'patterns-images'];
+
+function isBucketMissingError(error) {
+  return /bucket not found/i.test(error?.message || '');
+}
+
+function buildImagePath(bucket, folder, fileExt) {
+  const fileName = `${crypto.randomUUID()}.${fileExt}`;
+  if (bucket === 'patterns-images') {
+    return `blog/${folder}/${fileName}`;
+  }
+  return folder ? `${folder}/${fileName}` : fileName;
+}
+
+async function uploadImage(file, folder = 'content') {
+  const fileExt = file.name.split('.').pop();
+  let lastError = null;
+
+  for (const bucket of IMAGE_BUCKETS) {
+    const filePath = buildImagePath(bucket, folder, fileExt);
+    const { error: uploadError } = await supabase.storage
+      .from(bucket)
+      .upload(filePath, file);
+
+    if (!uploadError) {
+      const { data: { publicUrl } } = supabase.storage
+        .from(bucket)
+        .getPublicUrl(filePath);
+      return publicUrl;
+    }
+
+    lastError = uploadError;
+    if (!isBucketMissingError(uploadError)) throw uploadError;
+  }
+
+  if (isBucketMissingError(lastError)) {
+    console.warn(
+      'Supabase storage buckets are missing. Embedding image inline. ' +
+        'Run "npm run setup:storage" after adding SUPABASE_SERVICE_ROLE_KEY to .env.'
+    );
+    return fileToDataUrl(file);
+  }
+
+  throw lastError || new Error('Failed to upload image.');
+}
+
+async function resolveImageUrl(image, imageFile) {
+  if (imageFile instanceof File) {
+    return uploadImage(imageFile, 'featured');
+  }
+  return image ?? '';
+}
 
 function mapRow(row) {
   if (!row) return null;
@@ -34,6 +87,8 @@ function normalizeTags(tags) {
 }
 
 export const blogService = {
+  uploadImage,
+
   async getPosts() {
     const { data, error } = await supabase
       .from(TABLE)
@@ -44,14 +99,26 @@ export const blogService = {
     return (data || []).map(mapRow);
   },
 
+  async getPostById(id) {
+    const { data, error } = await supabase
+      .from(TABLE)
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error) throw error;
+    return mapRow(data);
+  },
+
   async createPost(payload) {
+    const imageUrl = await resolveImageUrl(payload.image, payload.imageFile);
     const row = {
       title: payload.title,
       excerpt: payload.excerpt ?? '',
       content: payload.content ?? '',
       author: payload.author ?? '',
       read_time: payload.read_time ?? payload.readTime ?? '',
-      image: payload.image ?? '',
+      image: imageUrl,
       category: payload.category ?? '',
       tags: normalizeTags(payload.tags),
     };
@@ -67,10 +134,14 @@ export const blogService = {
       content: payload.content ?? '',
       author: payload.author ?? '',
       read_time: payload.read_time ?? payload.readTime ?? undefined,
-      image: payload.image ?? undefined,
       category: payload.category ?? undefined,
       updated_at: new Date().toISOString(),
     };
+    if (payload.imageFile instanceof File) {
+      row.image = await resolveImageUrl(payload.image, payload.imageFile);
+    } else if (payload.image !== undefined) {
+      row.image = payload.image;
+    }
     if (payload.tags !== undefined) {
       row.tags = normalizeTags(payload.tags);
     }

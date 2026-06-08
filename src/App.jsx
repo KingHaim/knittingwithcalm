@@ -1,7 +1,11 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import Layout from './layouts/Layout';
 import ComingSoon from './pages/ComingSoon';
+import Blog from './pages/Blog';
+import BlogPost from './pages/BlogPost';
+import BlogTag from './pages/BlogTag';
 import SignIn from './pages/SignIn';
 import Dashboard from './pages/admin/Dashboard';
 import AdminPatterns from './pages/admin/Patterns';
@@ -21,6 +25,9 @@ function App() {
         <Router>
           <Routes>
             <Route path="/" element={<ComingSoon />} />
+            <Route path="/blog" element={<Layout><Blog /></Layout>} />
+            <Route path="/blog/tag/:tag" element={<Layout><BlogTag /></Layout>} />
+            <Route path="/blog/:id" element={<Layout><BlogPost /></Layout>} />
             <Route path="/signin" element={<SignIn />} />
             <Route path="/admin" element={<Dashboard />} />
             <Route path="/admin/patterns" element={<AdminPatterns />} />

@@ -37,4 +37,127 @@
   .btn-primary {
     @apply bg-blue-500 text-white px-4 py-2 rounded;
   }
+
+  .blog-content {
+    @apply text-gray-700 leading-relaxed;
+  }
+
+  .blog-content > * + * {
+    @apply mt-4;
+  }
+
+  .blog-content h2 {
+    @apply text-2xl font-primary text-gray-900 mt-8 mb-3;
+  }
+
+  .blog-content h3 {
+    @apply text-xl font-primary text-gray-900 mt-6 mb-2;
+  }
+
+  .blog-content p {
+    @apply text-base leading-7;
+  }
+
+  .blog-content a {
+    @apply text-indigo-600 underline hover:text-indigo-500;
+  }
+
+  .blog-content ul {
+    @apply list-disc pl-6 space-y-2;
+  }
+
+  .blog-content ol {
+    @apply list-decimal pl-6 space-y-2;
+  }
+
+  .blog-content blockquote {
+    @apply border-l-4 border-indigo-200 pl-4 italic text-gray-600 my-6;
+  }
+
+  .blog-content img,
+  .blog-content .blog-inline-image {
+    @apply rounded-lg max-w-full h-auto;
+  }
+
+  .blog-content .blog-figure {
+    @apply my-8;
+  }
+
+  .blog-content .blog-figure img {
+    @apply w-full;
+  }
+
+  .blog-content figcaption {
+    @apply mt-2 text-center text-sm text-gray-500;
+  }
+
+  .blog-content strong {
+    @apply font-semibold text-gray-900;
+  }
+
+  [contenteditable].blog-content:empty::before {
+    content: attr(data-placeholder);
+    @apply text-gray-400 pointer-events-none;
+  }
+
+  .blog-editor-area {
+    @apply text-gray-700 leading-relaxed;
+    word-break: normal;
+    overflow-wrap: break-word;
+  }
+
+  .blog-editor-area > * + * {
+    @apply mt-4;
+  }
+
+  .blog-editor-area h2 {
+    @apply text-2xl font-primary text-gray-900 mt-8 mb-3;
+  }
+
+  .blog-editor-area h3 {
+    @apply text-xl font-primary text-gray-900 mt-6 mb-2;
+  }
+
+  .blog-editor-area p {
+    @apply text-base leading-7;
+  }
+
+  .blog-editor-area img,
+  .blog-editor-area .blog-inline-image {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    float: none !important;
+    clear: both !important;
+    @apply rounded-lg my-6;
+  }
+
+  .blog-editor-area .blog-figure,
+  .blog-editor-area figure {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    float: none !important;
+    clear: both !important;
+    @apply my-8;
+  }
+
+  .blog-editor-area .blog-figure img,
+  .blog-editor-area figure img {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    float: none !important;
+  }
+
+  .blog-editor-area figcaption {
+    @apply mt-2 text-center text-sm text-gray-500;
+  }
+
+  [contenteditable].blog-editor-area:empty::before {
+    content: attr(data-placeholder);
+    @apply text-gray-400 pointer-events-none;
+  }
 }

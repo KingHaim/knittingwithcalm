@@ -1,4 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { Eye } from 'lucide-react';
+import BlogHtmlEditor from './BlogHtmlEditor';
+import BlogFeaturedImage from './BlogFeaturedImage';
+import BlogPostPreview from './BlogPostPreview';
 
 const initialForm = {
   title: '',
@@ -14,6 +18,9 @@ const initialForm = {
 export default function BlogForm({ post, onSubmit, onCancel, isLoading }) {
   const [formData, setFormData] = useState(initialForm);
   const [tagsInput, setTagsInput] = useState('');
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState('');
+  const [showPreview, setShowPreview] = useState(false);
 
   useEffect(() => {
     if (post) {
@@ -28,6 +35,13 @@ export default function BlogForm({ post, onSubmit, onCancel, isLoading }) {
         tags: Array.isArray(post.tags) ? post.tags : [],
       });
       setTagsInput(Array.isArray(post.tags) ? post.tags.join(', ') : '');
+      setImageFile(null);
+      setImagePreview('');
+    } else {
+      setFormData(initialForm);
+      setTagsInput('');
+      setImageFile(null);
+      setImagePreview('');
     }
   }, [post]);
 
@@ -36,131 +50,172 @@ export default function BlogForm({ post, onSubmit, onCancel, isLoading }) {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const buildPayload = () => {
     const tags = tagsInput
       .split(',')
       .map((t) => t.trim())
       .filter(Boolean);
-    onSubmit({ ...formData, tags });
+    return { ...formData, tags, imageFile };
   };
 
+  const handlePreview = (e) => {
+    e.preventDefault();
+    setShowPreview(true);
+  };
+
+  const handlePublish = () => {
+    onSubmit(buildPayload());
+    setShowPreview(false);
+  };
+
+  const handleFeaturedImageChange = ({ file, preview }) => {
+    setImageFile(file);
+    setImagePreview(preview);
+    setFormData((prev) => ({ ...prev, image: preview }));
+  };
+
+  const handleFeaturedImageClear = () => {
+    setImageFile(null);
+    setImagePreview('');
+    setFormData((prev) => ({ ...prev, image: '' }));
+  };
+
+  const previewPost = {
+    ...buildPayload(),
+    imagePreview: imagePreview || formData.image,
+    date: post?.date,
+  };
+
+  const fieldClass =
+    'w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500';
+
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm space-y-4">
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-        <input
-          type="text"
-          name="title"
-          value={formData.title}
-          onChange={handleChange}
-          required
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-          placeholder="Post title"
-        />
-      </div>
+    <>
+      <form onSubmit={handlePreview} className="w-full bg-white rounded-xl border border-gray-200 p-6 shadow-sm space-y-8">
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+            <input
+              type="text"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              required
+              className={fieldClass}
+              placeholder="Post title"
+            />
+          </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Excerpt</label>
-        <textarea
-          name="excerpt"
-          value={formData.excerpt}
-          onChange={handleChange}
-          rows={2}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-          placeholder="Short summary for the card"
-        />
-      </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Excerpt</label>
+            <textarea
+              name="excerpt"
+              value={formData.excerpt}
+              onChange={handleChange}
+              rows={2}
+              className={fieldClass}
+              placeholder="Short summary shown on the blog listing card"
+            />
+          </div>
+        </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Content</label>
-        <textarea
-          name="content"
+        <BlogHtmlEditor
           value={formData.content}
-          onChange={handleChange}
-          rows={8}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-          placeholder="Full article content (plain text or HTML)"
+          onChange={(content) => setFormData((prev) => ({ ...prev, content }))}
         />
-      </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Author</label>
-          <input
-            type="text"
-            name="author"
-            value={formData.author}
-            onChange={handleChange}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-            placeholder="Author name"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Read time</label>
-          <input
-            type="text"
-            name="read_time"
-            value={formData.read_time}
-            onChange={handleChange}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-            placeholder="e.g. 5 min"
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-          <input
-            type="text"
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-            placeholder="e.g. Techniques"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
-          <input
-            type="text"
-            name="image"
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2 border-t border-gray-100">
+          <BlogFeaturedImage
             value={formData.image}
-            onChange={handleChange}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-            placeholder="https://..."
+            previewUrl={imagePreview}
+            onChange={handleFeaturedImageChange}
+            onClear={handleFeaturedImageClear}
           />
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Author</label>
+              <input
+                type="text"
+                name="author"
+                value={formData.author}
+                onChange={handleChange}
+                className={fieldClass}
+                placeholder="Author name"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Read time</label>
+              <input
+                type="text"
+                name="read_time"
+                value={formData.read_time}
+                onChange={handleChange}
+                className={fieldClass}
+                placeholder="e.g. 5 min"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+              <input
+                type="text"
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                className={fieldClass}
+                placeholder="e.g. Techniques"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Tags (comma-separated)</label>
+              <input
+                type="text"
+                value={tagsInput}
+                onChange={(e) => setTagsInput(e.target.value)}
+                className={fieldClass}
+                placeholder="e.g. colorwork, fair isle"
+              />
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Tags (comma-separated)</label>
-        <input
-          type="text"
-          value={tagsInput}
-          onChange={(e) => setTagsInput(e.target.value)}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-          placeholder="e.g. colorwork, fair isle, techniques"
+        <div className="flex flex-wrap gap-3 pt-2 border-t border-gray-100">
+          <button
+            type="submit"
+            className="flex items-center gap-2 px-4 py-2 bg-white border border-indigo-200 text-indigo-700 rounded-lg hover:bg-indigo-50"
+          >
+            <Eye size={18} />
+            Preview
+          </button>
+          <button
+            type="button"
+            onClick={() => onSubmit(buildPayload())}
+            disabled={isLoading}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+          >
+            {isLoading ? 'Saving…' : post ? 'Update Post' : 'Publish'}
+          </button>
+          <button
+            type="button"
+            onClick={onCancel}
+            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+
+      {showPreview && (
+        <BlogPostPreview
+          post={previewPost}
+          onClose={() => setShowPreview(false)}
+          onPublish={handlePublish}
+          isLoading={isLoading}
         />
-      </div>
-
-      <div className="flex gap-3 pt-2">
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
-        >
-          {isLoading ? 'Saving…' : post ? 'Update Post' : 'Add Post'}
-        </button>
-        <button
-          type="button"
-          onClick={onCancel}
-          className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
-        >
-          Cancel
-        </button>
-      </div>
-    </form>
+      )}
+    </>
   );
 }

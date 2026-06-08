@@ -110,7 +110,7 @@ export default function AdminBlog() {
       )}
 
       {showForm ? (
-        <div className="max-w-2xl">
+        <div className="w-full">
           <BlogForm
             post={editingPost}
             onSubmit={handleSubmit}

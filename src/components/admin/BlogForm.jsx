@@ -87,6 +87,11 @@ export default function BlogForm({ post, onSubmit, onCancel, isLoading }) {
     setShowPreview(false);
   };
 
+  const handleSaveDraft = () => {
+    onSubmit(buildPayload('draft'));
+    setShowPreview(false);
+  };
+
   const handleFeaturedImageChange = ({ file, preview }) => {
     setImageFile(file);
     setImagePreview(preview);
@@ -249,7 +254,7 @@ export default function BlogForm({ post, onSubmit, onCancel, isLoading }) {
             className="flex items-center gap-2 px-4 py-2 bg-white border border-indigo-200 text-indigo-700 rounded-lg hover:bg-indigo-50"
           >
             <Eye size={18} />
-            Preview
+            Preview and publish
           </button>
           <button
             type="button"
@@ -273,6 +278,7 @@ export default function BlogForm({ post, onSubmit, onCancel, isLoading }) {
         <BlogPostPreview
           post={previewPost}
           onClose={() => setShowPreview(false)}
+          onSaveDraft={handleSaveDraft}
           onPublish={handlePublish}
           isLoading={isLoading}
         />

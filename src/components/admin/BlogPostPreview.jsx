@@ -12,7 +12,7 @@ export default function BlogPostPreview({ post, onClose, onSaveDraft, onPublish,
       <div className="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl my-4">
         <div className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b border-gray-200 bg-white/95 backdrop-blur px-6 py-4 rounded-t-2xl">
           <div>
-            <p className="text-xs uppercase tracking-wider text-indigo-600 font-medium">Preview</p>
+            <p className="text-xs uppercase tracking-wider text-indigo-600 font-medium">Preview and publish</p>
             <p className="text-sm text-gray-500">This is how your post will appear on the blog</p>
           </div>
           <div className="flex items-center gap-2">

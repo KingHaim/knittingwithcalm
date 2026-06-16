@@ -149,6 +149,7 @@ CREATE TABLE IF NOT EXISTS blog_posts (
   image text DEFAULT '',
   category text DEFAULT '',
   tags jsonb DEFAULT '[]',
+  status text DEFAULT 'draft' CHECK (status IN ('draft', 'published')),
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now()
 );

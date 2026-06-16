@@ -3,6 +3,11 @@ import { fileToDataUrl } from '../utils/compressImage';
 
 const TABLE = 'blog_posts';
 const IMAGE_BUCKETS = ['blog-images', 'patterns-images'];
+const STATUS_OPTIONS = ['draft', 'published'];
+
+function normalizeStatus(status, fallback = 'draft') {
+  return STATUS_OPTIONS.includes(status) ? status : fallback;
+}
 
 function isBucketMissingError(error) {
   return /bucket not found/i.test(error?.message || '');
@@ -77,6 +82,7 @@ function mapRow(row) {
     image: row.image,
     category: row.category,
     tags,
+    status: normalizeStatus(row.status),
   };
 }
 
@@ -89,25 +95,44 @@ function normalizeTags(tags) {
 export const blogService = {
   uploadImage,
 
-  async getPosts() {
-    const { data, error } = await supabase
+  async getPosts({ status } = {}) {
+    let query = supabase
       .from(TABLE)
       .select('*')
       .order('created_at', { ascending: false });
+
+    if (status && status !== 'all') {
+      query = query.eq('status', normalizeStatus(status, 'published'));
+    }
+
+    const { data, error } = await query;
 
     if (error) throw error;
     return (data || []).map(mapRow);
   },
 
-  async getPostById(id) {
-    const { data, error } = await supabase
+  async getPublishedPosts() {
+    return this.getPosts({ status: 'published' });
+  },
+
+  async getPostById(id, { status } = {}) {
+    let query = supabase
       .from(TABLE)
       .select('*')
-      .eq('id', id)
-      .single();
+      .eq('id', id);
+
+    if (status && status !== 'all') {
+      query = query.eq('status', normalizeStatus(status, 'published'));
+    }
+
+    const { data, error } = await query.single();
 
     if (error) throw error;
     return mapRow(data);
+  },
+
+  async getPublishedPostById(id) {
+    return this.getPostById(id, { status: 'published' });
   },
 
   async createPost(payload) {
@@ -121,6 +146,7 @@ export const blogService = {
       image: imageUrl,
       category: payload.category ?? '',
       tags: normalizeTags(payload.tags),
+      status: normalizeStatus(payload.status),
     };
     const { data, error } = await supabase.from(TABLE).insert([row]).select().single();
     if (error) throw error;
@@ -137,6 +163,9 @@ export const blogService = {
       category: payload.category ?? undefined,
       updated_at: new Date().toISOString(),
     };
+    if (payload.status !== undefined) {
+      row.status = normalizeStatus(payload.status);
+    }
     if (payload.imageFile instanceof File) {
       row.image = await resolveImageUrl(payload.image, payload.imageFile);
     } else if (payload.image !== undefined) {

@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { blogService } from '../services/blogService';
 
-export function useBlogPost(id) {
+export function useBlogPost(handle) {
   return useQuery({
-    queryKey: ['blog-post', id],
-    queryFn: () => blogService.getPublishedPostById(id),
-    enabled: Boolean(id),
+    queryKey: ['blog-post', handle],
+    queryFn: () => blogService.getPublishedPostByHandle(handle),
+    enabled: Boolean(handle),
   });
 }

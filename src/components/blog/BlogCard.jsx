@@ -1,13 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { formatDate } from '../../utils/dateFormatter';
+import { buildBlogPath } from '../../utils/slugify';
 
 export default function BlogCard({ post }) {
-  const { id, title, excerpt, author, date, readTime, image, category, tags } = post;
+  const { title, excerpt, author, date, readTime, image, category, tags } = post;
+  const postPath = buildBlogPath(post);
 
   return (
     <article className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-      <Link to={`/blog/${id}`}>
+      <Link to={postPath}>
         <div className="aspect-[16/9]">
           <img 
             src={image} 
@@ -24,7 +26,7 @@ export default function BlogCard({ post }) {
           <span>{readTime} read</span>
         </div>
 
-        <Link to={`/blog/${id}`}>
+        <Link to={postPath}>
           <h3 className="text-xl font-semibold mb-2 hover:text-indigo-600 transition-colors">
             {title}
           </h3>

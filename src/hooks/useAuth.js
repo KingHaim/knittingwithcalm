@@ -8,14 +8,14 @@ const useAuthStore = create((set) => ({
 export function useAuth() {
   const { user, setUser } = useAuthStore();
 
-  const signUp = async (email, password) => {
+  const signUp = async (email, _password) => {
     // Temporary mock authentication
     const mockUser = { id: '1', email };
     setUser(mockUser);
     return { user: mockUser };
   };
 
-  const signIn = async (email, password) => {
+  const signIn = async (email, _password) => {
     // Temporary mock authentication
     const mockUser = { id: '1', email };
     setUser(mockUser);

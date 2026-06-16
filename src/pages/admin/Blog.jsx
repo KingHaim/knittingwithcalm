@@ -175,6 +175,7 @@ export default function AdminBlog() {
                     {p.category && `${p.category} · `}
                     {p.date && new Date(p.date).toLocaleDateString()}
                   </p>
+                  <p className="text-xs text-gray-400 truncate">/blog/{p.slug || p.id}</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   <button

@@ -52,7 +52,7 @@ export default function AdminPatterns() {
       try {
         await patternService.deletePattern(pattern.id, pattern.pdf_url, pattern.images, pattern.pdf_files);
         fetchPatterns();
-      } catch (err) {
+      } catch {
         setError('Error deleting pattern');
       }
     }

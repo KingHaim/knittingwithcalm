@@ -1,5 +1,3 @@
-import { env } from './environment';
-
 export const paypalConfig = {
   "client-id": "AYsOmsJ-BaZgz45H8oiqHZ2Xgtz0uPaCf-OTo9qK1Xdo2Wl3L3RnjL1-dpZlNtg-aDZslsbZS-RXo6TA",
   currency: "EUR",

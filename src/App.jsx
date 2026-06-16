@@ -27,7 +27,7 @@ function App() {
             <Route path="/" element={<ComingSoon />} />
             <Route path="/blog" element={<Layout><Blog /></Layout>} />
             <Route path="/blog/tag/:tag" element={<Layout><BlogTag /></Layout>} />
-            <Route path="/blog/:id" element={<Layout><BlogPost /></Layout>} />
+            <Route path="/blog/:handle" element={<Layout><BlogPost /></Layout>} />
             <Route path="/signin" element={<SignIn />} />
             <Route path="/admin" element={<Dashboard />} />
             <Route path="/admin/patterns" element={<AdminPatterns />} />

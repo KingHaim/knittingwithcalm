@@ -3,9 +3,11 @@ import { Eye } from 'lucide-react';
 import BlogHtmlEditor from './BlogHtmlEditor';
 import BlogFeaturedImage from './BlogFeaturedImage';
 import BlogPostPreview from './BlogPostPreview';
+import { slugify } from '../../utils/slugify';
 
 const initialForm = {
   title: '',
+  slug: '',
   excerpt: '',
   content: '',
   author: '',
@@ -22,11 +24,13 @@ export default function BlogForm({ post, onSubmit, onCancel, isLoading }) {
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
   const [showPreview, setShowPreview] = useState(false);
+  const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
 
   useEffect(() => {
     if (post) {
       setFormData({
         title: post.title || '',
+        slug: post.slug || slugify(post.title || ''),
         excerpt: post.excerpt || '',
         content: post.content || '',
         author: post.author || '',
@@ -39,17 +43,30 @@ export default function BlogForm({ post, onSubmit, onCancel, isLoading }) {
       setTagsInput(Array.isArray(post.tags) ? post.tags.join(', ') : '');
       setImageFile(null);
       setImagePreview('');
+      setSlugManuallyEdited(Boolean(post.slug));
     } else {
       setFormData(initialForm);
       setTagsInput('');
       setImageFile(null);
       setImagePreview('');
+      setSlugManuallyEdited(false);
     }
   }, [post]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => {
+      const next = { ...prev, [name]: value };
+      if (name === 'title' && !slugManuallyEdited) {
+        next.slug = slugify(value, '');
+      }
+      return next;
+    });
+  };
+
+  const handleSlugChange = (e) => {
+    setSlugManuallyEdited(true);
+    setFormData((prev) => ({ ...prev, slug: slugify(e.target.value, '') }));
   };
 
   const buildPayload = (statusOverride) => {
@@ -114,6 +131,24 @@ export default function BlogForm({ post, onSubmit, onCancel, isLoading }) {
               className={fieldClass}
               placeholder="Post title"
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">URL handle</label>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+              <span className="text-sm text-gray-500">/blog/</span>
+              <input
+                type="text"
+                name="slug"
+                value={formData.slug}
+                onChange={handleSlugChange}
+                className={fieldClass}
+                placeholder="my-short-blog-url"
+              />
+            </div>
+            <p className="mt-1 text-xs text-gray-500">
+              Auto-generated from the title. Edit it to keep long titles out of the URL.
+            </p>
           </div>
 
           <div>

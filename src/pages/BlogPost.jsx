@@ -6,8 +6,8 @@ import BlogPostContent from '../components/blog/BlogPostContent';
 import { formatDate } from '../utils/dateFormatter';
 
 export default function BlogPost() {
-  const { id } = useParams();
-  const { data: post, isLoading, isError } = useBlogPost(id);
+  const { handle } = useParams();
+  const { data: post, isLoading, isError } = useBlogPost(handle);
 
   if (isLoading) {
     return (

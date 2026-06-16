@@ -142,6 +142,7 @@ CREATE TABLE IF NOT EXISTS coupons (
 CREATE TABLE IF NOT EXISTS blog_posts (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   title text NOT NULL,
+  slug text NOT NULL UNIQUE,
   excerpt text DEFAULT '',
   content text DEFAULT '',
   author text DEFAULT '',

@@ -4,7 +4,7 @@ import { patternService } from '../../services/patternService';
 import Button from '../ui/Button';
 import {
     Plus, Trash2, Tag, Percent, Calendar,
-    Users, CheckCircle2, ChevronDown, ChevronUp,
+    Users, CheckCircle2,
     Package, Layout, Gift
 } from 'lucide-react';
 
@@ -41,7 +41,7 @@ export default function CouponEngine() {
             ]);
             setCoupons(couponsData);
             setPatterns(patternsData);
-        } catch (err) {
+        } catch {
             setError('Error loading data');
         } finally {
             setIsLoading(false);
@@ -96,7 +96,7 @@ export default function CouponEngine() {
             try {
                 await couponService.deleteCoupon(id);
                 fetchInitialData();
-            } catch (err) {
+            } catch {
                 setError('Error deleting coupon');
             }
         }

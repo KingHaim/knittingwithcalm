@@ -1,12 +1,21 @@
 import { supabase } from '../config/supabase';
 import { fileToDataUrl } from '../utils/compressImage';
+import { slugify } from '../utils/slugify';
 
 const TABLE = 'blog_posts';
 const IMAGE_BUCKETS = ['blog-images', 'patterns-images'];
 const STATUS_OPTIONS = ['draft', 'published'];
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function normalizeStatus(status, fallback = 'draft') {
   return STATUS_OPTIONS.includes(status) ? status : fallback;
+}
+
+function applyStatusFilter(query, status) {
+  if (status && status !== 'all') {
+    return query.eq('status', normalizeStatus(status, 'published'));
+  }
+  return query;
 }
 
 function isBucketMissingError(error) {
@@ -74,6 +83,7 @@ function mapRow(row) {
   return {
     id: row.id,
     title: row.title,
+    slug: row.slug,
     excerpt: row.excerpt,
     content: row.content,
     author: row.author,
@@ -92,6 +102,27 @@ function normalizeTags(tags) {
   return [];
 }
 
+async function getAvailableSlug(value, currentId) {
+  const baseSlug = slugify(value);
+  let candidate = baseSlug;
+  let suffix = 2;
+
+  while (true) {
+    const { data, error } = await supabase
+      .from(TABLE)
+      .select('id')
+      .eq('slug', candidate)
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!data || data.id === currentId) return candidate;
+
+    const suffixText = `-${suffix}`;
+    candidate = `${baseSlug.slice(0, 80 - suffixText.length).replace(/-+$/g, '')}${suffixText}`;
+    suffix += 1;
+  }
+}
+
 export const blogService = {
   uploadImage,
 
@@ -101,9 +132,7 @@ export const blogService = {
       .select('*')
       .order('created_at', { ascending: false });
 
-    if (status && status !== 'all') {
-      query = query.eq('status', normalizeStatus(status, 'published'));
-    }
+    query = applyStatusFilter(query, status);
 
     const { data, error } = await query;
 
@@ -121,9 +150,7 @@ export const blogService = {
       .select('*')
       .eq('id', id);
 
-    if (status && status !== 'all') {
-      query = query.eq('status', normalizeStatus(status, 'published'));
-    }
+    query = applyStatusFilter(query, status);
 
     const { data, error } = await query.single();
 
@@ -131,14 +158,37 @@ export const blogService = {
     return mapRow(data);
   },
 
-  async getPublishedPostById(id) {
-    return this.getPostById(id, { status: 'published' });
+  async getPostByHandle(handle, { status } = {}) {
+    const normalizedHandle = String(handle || '').trim();
+    if (!normalizedHandle) return null;
+
+    let query = supabase
+      .from(TABLE)
+      .select('*')
+      .eq('slug', normalizedHandle);
+    query = applyStatusFilter(query, status);
+
+    const { data, error } = await query.maybeSingle();
+    if (error) throw error;
+    if (data) return mapRow(data);
+
+    if (UUID_PATTERN.test(normalizedHandle)) {
+      return this.getPostById(normalizedHandle, { status });
+    }
+
+    return null;
+  },
+
+  async getPublishedPostByHandle(handle) {
+    return this.getPostByHandle(handle, { status: 'published' });
   },
 
   async createPost(payload) {
     const imageUrl = await resolveImageUrl(payload.image, payload.imageFile);
+    const slug = await getAvailableSlug(payload.slug || payload.title);
     const row = {
       title: payload.title,
+      slug,
       excerpt: payload.excerpt ?? '',
       content: payload.content ?? '',
       author: payload.author ?? '',
@@ -163,6 +213,9 @@ export const blogService = {
       category: payload.category ?? undefined,
       updated_at: new Date().toISOString(),
     };
+    if (payload.slug !== undefined || payload.title !== undefined) {
+      row.slug = await getAvailableSlug(payload.slug || payload.title, id);
+    }
     if (payload.status !== undefined) {
       row.status = normalizeStatus(payload.status);
     }

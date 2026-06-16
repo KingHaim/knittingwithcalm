@@ -87,6 +87,11 @@ export default function BlogForm({ post, onSubmit, onCancel, isLoading }) {
     setShowPreview(false);
   };
 
+  const handleSaveDraft = () => {
+    onSubmit(buildPayload('draft'));
+    setShowPreview(false);
+  };
+
   const handleFeaturedImageChange = ({ file, preview }) => {
     setImageFile(file);
     setImagePreview(preview);
@@ -273,6 +278,7 @@ export default function BlogForm({ post, onSubmit, onCancel, isLoading }) {
         <BlogPostPreview
           post={previewPost}
           onClose={() => setShowPreview(false)}
+          onSaveDraft={handleSaveDraft}
           onPublish={handlePublish}
           isLoading={isLoading}
         />

@@ -3,7 +3,7 @@ import { X } from 'lucide-react';
 import BlogPostContent from '../blog/BlogPostContent';
 import { formatDate } from '../../utils/dateFormatter';
 
-export default function BlogPostPreview({ post, onClose, onPublish, isLoading }) {
+export default function BlogPostPreview({ post, onClose, onSaveDraft, onPublish, isLoading }) {
   const previewDate = post.date || new Date().toISOString();
   const imageUrl = post.imagePreview || post.image;
 
@@ -16,6 +16,14 @@ export default function BlogPostPreview({ post, onClose, onPublish, isLoading })
             <p className="text-sm text-gray-500">This is how your post will appear on the blog</p>
           </div>
           <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={onSaveDraft}
+              disabled={isLoading}
+              className="px-4 py-2 bg-white border border-indigo-200 text-indigo-700 rounded-lg hover:bg-indigo-50 disabled:opacity-50 text-sm font-medium"
+            >
+              {isLoading ? 'Saving…' : 'Save as draft'}
+            </button>
             <button
               type="button"
               onClick={onPublish}

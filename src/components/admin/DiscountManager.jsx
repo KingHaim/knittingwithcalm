@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../config/supabase';
 import Button from '../ui/Button';
-import { Plus, Trash2, Tag, Percent } from 'lucide-react';
+import { Plus, Trash2, Percent } from 'lucide-react';
 
 export default function DiscountManager() {
     const [codes, setCodes] = useState([]);
     const [newCode, setNewCode] = useState({ code: '', discount_type: 'percentage', value: '', active: true });
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [, setError] = useState(null);
 
     useEffect(() => {
         fetchCodes();
@@ -32,7 +32,7 @@ export default function DiscountManager() {
             if (error) throw error;
             setNewCode({ code: '', discount_type: 'percentage', value: '', active: true });
             fetchCodes();
-        } catch (err) {
+        } catch {
             setError('Error creating discount code. Code might already exist.');
         } finally {
             setIsLoading(false);

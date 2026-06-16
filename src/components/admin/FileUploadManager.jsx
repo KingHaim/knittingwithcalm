@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { X, Upload, FileText, Image as ImageIcon, GripVertical } from 'lucide-react';
+import { X, Upload, FileText } from 'lucide-react';
 
 export default function FileUploadManager({
   onImagesChange,
@@ -14,7 +14,7 @@ export default function FileUploadManager({
   const [images, setImages] = useState(initialImages);
   const [mainImage, setMainImage] = useState(initialMainImage);
   const [pdfs, setPdfs] = useState(initialPdfs); // Each item: { file, url, language }
-  const [error, setError] = useState('');
+  const [, setError] = useState('');
 
   // IMAGE HANDLING
   const onDropImages = useCallback((acceptedFiles) => {

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Button from '../ui/Button';
 import FileUploadManager from './FileUploadManager';
-import { Plus, Trash2, Eye, EyeOff, Save, X as CloseIcon } from 'lucide-react';
+import { Plus, Trash2, Eye, EyeOff } from 'lucide-react';
 
 const DIFFICULTY_LEVELS = ['Beginner', 'Intermediate', 'Advanced', 'Expert'];
 const YARN_WEIGHTS = ['Lace', 'Fingering', 'Sport', 'DK', 'Worsted', 'Aran', 'Bulky', 'Super Bulky'];

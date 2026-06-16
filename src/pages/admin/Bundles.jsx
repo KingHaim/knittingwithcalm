@@ -4,7 +4,7 @@ import Button from '../../components/ui/Button';
 
 export default function AdminBundles() {
   const { user } = useAuth();
-  const [bundles, setBundles] = useState([]);
+  const [bundles] = useState([]);
 
   if (!user) {
     return (

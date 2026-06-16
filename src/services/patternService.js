@@ -12,7 +12,7 @@ export const patternService = {
         const fileName = `${crypto.randomUUID()}.${fileExt}`;
         const filePath = `${fileName}`;
 
-        const { error: uploadError, data } = await supabase.storage
+        const { error: uploadError } = await supabase.storage
             .from(bucket)
             .upload(filePath, file);
 

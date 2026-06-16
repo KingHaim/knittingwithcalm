@@ -10,7 +10,7 @@ export function useAuth() {
 
   return {
     user,
-    signUp: async (email, password) => {
+    signUp: async (email, _password) => {
       // Temporary mock authentication
       const mockUser = { id: '1', email };
       setUser(mockUser);

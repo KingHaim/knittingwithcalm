@@ -1,10 +1,9 @@
 import React from 'react';
 import { useCart } from '../../stores/cartStore';
 import Button from '../ui/Button';
-import PatternImage from './PatternImage';
 import PatternDetails from './PatternDetails';
 import PatternTags from './PatternTags';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 export default function PatternCard({ pattern }) {
   const { items, addItem } = useCart();

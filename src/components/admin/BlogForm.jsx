@@ -13,6 +13,7 @@ const initialForm = {
   image: '',
   category: '',
   tags: [],
+  status: 'draft',
 };
 
 export default function BlogForm({ post, onSubmit, onCancel, isLoading }) {
@@ -33,6 +34,7 @@ export default function BlogForm({ post, onSubmit, onCancel, isLoading }) {
         image: post.image || '',
         category: post.category || '',
         tags: Array.isArray(post.tags) ? post.tags : [],
+        status: post.status || 'draft',
       });
       setTagsInput(Array.isArray(post.tags) ? post.tags.join(', ') : '');
       setImageFile(null);
@@ -50,12 +52,12 @@ export default function BlogForm({ post, onSubmit, onCancel, isLoading }) {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const buildPayload = () => {
+  const buildPayload = (statusOverride) => {
     const tags = tagsInput
       .split(',')
       .map((t) => t.trim())
       .filter(Boolean);
-    return { ...formData, tags, imageFile };
+    return { ...formData, status: statusOverride || formData.status, tags, imageFile };
   };
 
   const handlePreview = (e) => {
@@ -64,7 +66,7 @@ export default function BlogForm({ post, onSubmit, onCancel, isLoading }) {
   };
 
   const handlePublish = () => {
-    onSubmit(buildPayload());
+    onSubmit(buildPayload('published'));
     setShowPreview(false);
   };
 
@@ -88,6 +90,14 @@ export default function BlogForm({ post, onSubmit, onCancel, isLoading }) {
 
   const fieldClass =
     'w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500';
+  let saveButtonLabel = 'Save Draft';
+  if (isLoading) {
+    saveButtonLabel = 'Saving…';
+  } else if (formData.status === 'published') {
+    saveButtonLabel = post ? 'Update Published' : 'Publish';
+  } else if (post) {
+    saveButtonLabel = 'Update Draft';
+  }
 
   return (
     <>
@@ -170,6 +180,22 @@ export default function BlogForm({ post, onSubmit, onCancel, isLoading }) {
             </div>
 
             <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+              <select
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                className={fieldClass}
+              >
+                <option value="draft">Draft</option>
+                <option value="published">Published</option>
+              </select>
+              <p className="mt-1 text-xs text-gray-500">
+                Draft posts are saved in admin only and hidden from the public blog.
+              </p>
+            </div>
+
+            <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Tags (comma-separated)</label>
               <input
                 type="text"
@@ -196,7 +222,7 @@ export default function BlogForm({ post, onSubmit, onCancel, isLoading }) {
             disabled={isLoading}
             className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
           >
-            {isLoading ? 'Saving…' : post ? 'Update Post' : 'Publish'}
+            {saveButtonLabel}
           </button>
           <button
             type="button"

@@ -4,6 +4,6 @@ import { blogService } from '../services/blogService';
 export function useBlogPosts() {
   return useQuery({
     queryKey: ['blog-posts'],
-    queryFn: () => blogService.getPosts(),
+    queryFn: () => blogService.getPublishedPosts(),
   });
 }
